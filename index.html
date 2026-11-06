@@ -183,6 +183,91 @@
       border: 1px solid var(--border);
     }
 
+    /* NEAR ME PANEL & DISTANCE BADGES */
+    .near-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .near-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .near-controls select {
+      padding: 8px 11px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--surface);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .near-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      background: var(--surface-muted);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .near-status-pill.active {
+      background: #EFF6FF;
+      color: #1D4ED8;
+      border-color: #BFDBFE;
+      font-weight: 500;
+    }
+
+    .near-recs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .near-rec-card {
+      background: var(--surface-muted);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .near-rec-card:hover {
+      background: #FFFFFF;
+      border-color: var(--border-hover);
+    }
+
+    .dist-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #EFF6FF;
+      color: #1D4ED8;
+      border: 1px solid #BFDBFE;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
     /* FILTER BAR */
     .filter-box {
       background: var(--surface);
@@ -636,8 +721,48 @@
           <div class="brand-sub">341 quán ăn chọn lọc tại Bình Thạnh, Phú Nhuận, Gò Vấp, Quận 6, Bình Tân & Tân Phú</div>
         </div>
         <div class="header-actions">
+          <button class="btn-outline" id="btnToggleNearMe" onclick="toggleNearMePanel()">📍 Quán gần tôi</button>
           <button class="btn-outline" id="btnToggleRandom" onclick="toggleRandomPanel()">🎲 Chọn ngẫu nhiên</button>
           <button class="btn-outline" id="btnToggleMap" onclick="toggleMapPanel()">🗺️ Bản đồ</button>
+        </div>
+      </div>
+
+      <!-- NEARBY LOCATION PANEL (COLLAPSIBLE) -->
+      <div class="collapse-panel" id="nearMePanel">
+        <div class="near-header-row">
+          <div class="near-controls">
+            <button class="btn-solid" id="btnDetectGps" onclick="detectMyLocation()">📍 Đọc vị trí GPS hiện tại</button>
+            <select id="presetLocationSelect" onchange="selectPresetLocation(this.value)">
+              <option value="">Hoặc chọn nhanh điểm đang đứng...</option>
+              <option value="10.8014,106.7114,Ngã tư Hàng Xanh (Bình Thạnh)">Ngã tư Hàng Xanh (Bình Thạnh)</option>
+              <option value="10.8045,106.7160,Khu D2 Nguyễn Gia Trí - HUTECH (Bình Thạnh)">Khu D2 Nguyễn Gia Trí (Bình Thạnh)</option>
+              <option value="10.8060,106.6960,Chợ Bà Chiểu - Vạn Kiếp (Bình Thạnh)">Chợ Bà Chiểu - Vạn Kiếp (Bình Thạnh)</option>
+              <option value="10.7951,106.7218,Vinhomes Landmark 81 (Bình Thạnh)">Vinhomes Landmark 81 (Bình Thạnh)</option>
+              <option value="10.7985,106.6880,Phố ẩm thực Phan Xích Long (Phú Nhuận)">Phố Phan Xích Long (Phú Nhuận)</option>
+              <option value="10.8270,106.6885,Phan Văn Trị - Emart (Gò Vấp)">Phan Văn Trị - Emart (Gò Vấp)</option>
+              <option value="10.7510,106.6345,Hậu Giang - Phú Lâm (Quận 6)">Hậu Giang - Phú Lâm (Quận 6)</option>
+              <option value="10.7430,106.6125,AEON Mall Khu Tên Lửa (Bình Tân)">AEON Mall Khu Tên Lửa (Bình Tân)</option>
+              <option value="10.7960,106.6315,Tân Sơn Nhì - Lũy Bán Bích (Tân Phú)">Tân Sơn Nhì - Lũy Bán Bích (Tân Phú)</option>
+            </select>
+            <select id="nearRadiusSelect" onchange="onChangeNearRadius(this.value)">
+              <option value="all">Bán kính: Tất cả (Xếp gần → xa)</option>
+              <option value="1">Trong vòng 1 km</option>
+              <option value="2">Trong vòng 2 km</option>
+              <option value="3" selected>Trong vòng 3 km</option>
+              <option value="5">Trong vòng 5 km</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span class="near-status-pill" id="nearStatusText">Chưa bật định vị</span>
+            <button class="reset-link" id="btnClearLocation" style="display:none;" onclick="clearUserLocation()">Tắt định vị</button>
+          </div>
+        </div>
+        <div id="nearRecommendBox" style="display:none;">
+          <div style="font-size:13px;font-weight:600;color:var(--text-secondary);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+            <span id="nearRecTitle">🎯 Top 5 quán ngon sát bên bạn nhất:</span>
+            <span style="font-size:12px;font-weight:400;color:var(--text-muted);">Mẹo: Bạn cũng có thể bấm trực tiếp lên Bản đồ để đổi vị trí đang đứng</span>
+          </div>
+          <div class="near-recs-grid" id="nearRecsGrid"></div>
         </div>
       </div>
 
@@ -647,6 +772,7 @@
           <strong style="font-size:13.5px;">Hôm nay chưa biết ăn gì?</strong>
           <select id="randArea">
             <option value="all">Mọi khu vực (7 quận)</option>
+            <option value="near-me">📍 Quán gần vị trí của tôi (&lt; 3km)</option>
             <option value="Bình Thạnh">Quận Bình Thạnh (79)</option>
             <option value="Phú Nhuận">Quận Phú Nhuận (67)</option>
             <option value="Quận 6">Quận 6 (50)</option>
@@ -717,6 +843,7 @@
 
         <select id="sortSelect" class="filter-select" onchange="applyFilters()">
           <option value="reviews-desc">Sắp xếp: Nhiều đánh giá</option>
+          <option value="distance-asc">Sắp xếp: Gần tôi nhất (km)</option>
           <option value="rating-desc">Sắp xếp: Điểm cao nhất</option>
           <option value="price-asc">Sắp xếp: Giá thấp → cao</option>
           <option value="price-desc">Sắp xếp: Giá cao → thấp</option>
@@ -773,7 +900,208 @@
     let currentStreet = "all";
     let mapInstance = null;
     let markersLayer = null;
+    let userMarker = null;
+    let userCircle = null;
+    let userLocation = null; // { lat, lng, label }
+    let nearRadiusKm = "all";
     const markerById = {};
+
+    function haversineKm(lat1, lon1, lat2, lon2) {
+      const toRad = d => (d * Math.PI) / 180;
+      const R = 6371;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function formatDistance(km) {
+      if (typeof km !== "number" || isNaN(km)) return "";
+      const mins = Math.max(1, Math.round((km / 22) * 60));
+      if (km < 1) {
+        return `${Math.round(km * 1000)} m (~${mins} phút)`;
+      }
+      return `${km.toFixed(1)} km (~${mins} phút)`;
+    }
+
+    function getDirectionsUrl(r) {
+      if (userLocation) {
+        return `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${r.lat},${r.lng}&travelmode=two-wheeler`;
+      }
+      return `https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lng}&travelmode=two-wheeler`;
+    }
+
+    function toggleNearMePanel(forceOpen) {
+      const panel = document.getElementById("nearMePanel");
+      const btn = document.getElementById("btnToggleNearMe");
+      const isOpen = typeof forceOpen === "boolean"
+        ? (panel.classList.toggle("open", forceOpen), forceOpen)
+        : panel.classList.toggle("open");
+      btn.classList.toggle("active", isOpen);
+      if (isOpen && !userLocation) {
+        detectMyLocation();
+      }
+    }
+
+    function setUserLocation(lat, lng, label, radiusOverride) {
+      userLocation = { lat: Number(lat), lng: Number(lng), label: label || `${Number(lat).toFixed(4)}, ${Number(lng).toFixed(4)}` };
+      const radiusSel = document.getElementById("nearRadiusSelect");
+      if (radiusOverride !== undefined) {
+        nearRadiusKm = radiusOverride;
+        radiusSel.value = String(radiusOverride);
+      } else {
+        nearRadiusKm = radiusSel.value;
+      }
+
+      // Check if user is far from all restaurants (> 6 km from nearest); if so, auto-expand radius to "all" so list is never empty
+      const minKm = Math.min(...RESTAURANTS.map(r => haversineKm(userLocation.lat, userLocation.lng, r.lat, r.lng)));
+      if (nearRadiusKm !== "all" && minKm > Number(nearRadiusKm)) {
+        nearRadiusKm = "all";
+        radiusSel.value = "all";
+      }
+
+      const statusEl = document.getElementById("nearStatusText");
+      statusEl.className = "near-status-pill active";
+      statusEl.textContent = `📍 Vị trí: ${userLocation.label}`;
+      document.getElementById("btnClearLocation").style.display = "inline";
+
+      // Switch sort to nearest first and show all districts by default so nearby spots across district borders appear
+      document.getElementById("sortSelect").value = "distance-asc";
+      if (currentDistrict !== "all") {
+        currentDistrict = "all";
+        document.querySelectorAll("#districtPills .tab-btn").forEach(btn => {
+          btn.classList.toggle("active", btn.getAttribute("data-district") === "all");
+        });
+      }
+
+      renderNearRecommendations();
+      applyFilters();
+    }
+
+    function detectMyLocation() {
+      const statusEl = document.getElementById("nearStatusText");
+      const btnGps = document.getElementById("btnDetectGps");
+      if (!navigator.geolocation) {
+        statusEl.textContent = "⚠️ Trình duyệt không hỗ trợ GPS — Hãy chọn nhanh vị trí ở menu bên cạnh";
+        return;
+      }
+      statusEl.className = "near-status-pill";
+      statusEl.textContent = "⏳ Đang đọc tọa độ GPS hiện tại của bạn...";
+      btnGps.disabled = true;
+
+      navigator.geolocation.getCurrentPosition(
+        async pos => {
+          btnGps.disabled = false;
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          document.getElementById("presetLocationSelect").value = "";
+          setUserLocation(lat, lng, `Tọa độ GPS (${lat.toFixed(4)}, ${lng.toFixed(4)})`, "3");
+
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=vi`);
+            if (res.ok) {
+              const data = await res.json();
+              const addr = data.address || {};
+              const parts = [
+                addr.road || addr.pedestrian || addr.suburb || addr.neighbourhood,
+                addr.quarter || addr.city_district || addr.district || addr.county || addr.city
+              ].filter(Boolean);
+              if (parts.length && userLocation && Math.abs(userLocation.lat - lat) < 0.0001) {
+                userLocation.label = parts.join(", ");
+                statusEl.textContent = `📍 Vị trí: ${userLocation.label}`;
+              }
+            }
+          } catch (_) {}
+        },
+        err => {
+          btnGps.disabled = false;
+          // Fallback to Hang Xanh / Binh Thanh center so user immediately sees nearby recommendations and can change preset
+          document.getElementById("presetLocationSelect").value = "10.8014,106.7114,Ngã tư Hàng Xanh (Bình Thạnh)";
+          setUserLocation(10.8014, 106.7114, "Ngã tư Hàng Xanh, Bình Thạnh (Mặc định do tắt quyền GPS)", "3");
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      );
+    }
+
+    function selectPresetLocation(val) {
+      if (!val) return;
+      const [latStr, lngStr, ...labelParts] = val.split(",");
+      setUserLocation(parseFloat(latStr), parseFloat(lngStr), labelParts.join(","), "3");
+    }
+
+    function onChangeNearRadius(val) {
+      nearRadiusKm = val;
+      if (userLocation) {
+        renderNearRecommendations();
+        applyFilters();
+      }
+    }
+
+    function clearUserLocation() {
+      userLocation = null;
+      nearRadiusKm = "all";
+      document.getElementById("presetLocationSelect").value = "";
+      document.getElementById("nearRadiusSelect").value = "3";
+      const statusEl = document.getElementById("nearStatusText");
+      statusEl.className = "near-status-pill";
+      statusEl.textContent = "Chưa bật định vị";
+      document.getElementById("btnClearLocation").style.display = "none";
+      document.getElementById("nearRecommendBox").style.display = "none";
+      if (document.getElementById("sortSelect").value === "distance-asc") {
+        document.getElementById("sortSelect").value = "reviews-desc";
+      }
+      if (userMarker && mapInstance) {
+        mapInstance.removeLayer(userMarker);
+        userMarker = null;
+      }
+      if (userCircle && mapInstance) {
+        mapInstance.removeLayer(userCircle);
+        userCircle = null;
+      }
+      applyFilters();
+    }
+
+    function renderNearRecommendations() {
+      const box = document.getElementById("nearRecommendBox");
+      const grid = document.getElementById("nearRecsGrid");
+      const titleEl = document.getElementById("nearRecTitle");
+      if (!userLocation) {
+        box.style.display = "none";
+        return;
+      }
+      box.style.display = "block";
+      const ranked = RESTAURANTS.map(r => ({
+        ...r,
+        _km: haversineKm(userLocation.lat, userLocation.lng, r.lat, r.lng)
+      })).sort((a, b) => a._km - b._km);
+
+      const maxKm = nearRadiusKm === "all" ? Infinity : Number(nearRadiusKm);
+      let within = ranked.filter(r => r._km <= maxKm);
+      if (!within.length) within = ranked.slice(0, 5);
+      const top5 = within.slice(0, 5);
+
+      titleEl.textContent = `🎯 Đề xuất ${top5.length} quán gần "${userLocation.label}" nhất:`;
+      grid.innerHTML = top5.map((r, idx) => {
+        const cleanPrice = (r.priceRange || "").replace(/\s*\([^)]*\)/g, "");
+        return `
+          <div class="near-rec-card" onclick="openModal('${r.id}')">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+              <span class="dist-badge">📍 ${formatDistance(r._km)}</span>
+              <span style="font-size:12px;font-weight:700;color:var(--star);">★ ${r.rating.toFixed(1)}</span>
+            </div>
+            <div style="font-size:13.5px;font-weight:700;color:var(--text);margin-top:2px;line-height:1.3;">${idx + 1}. ${r.name}</div>
+            <div style="font-size:12px;color:var(--text-muted);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;">${r.address}</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:6px;font-size:12px;">
+              <span style="color:var(--price);font-weight:600;">${cleanPrice}</span>
+              <a href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#1D4ED8;font-weight:600;text-decoration:none;">Chỉ đường ↗</a>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
 
     function toggleRandomPanel() {
       const panel = document.getElementById("randomPanel");
@@ -807,12 +1135,47 @@
         attribution: "&copy; OpenStreetMap"
       }).addTo(mapInstance);
       markersLayer = L.layerGroup().addTo(mapInstance);
+      mapInstance.on("click", e => {
+        const { lat, lng } = e.latlng;
+        document.getElementById("nearMePanel").classList.add("open");
+        document.getElementById("btnToggleNearMe").classList.add("active");
+        setUserLocation(lat, lng, `Điểm chọn trên bản đồ (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
+      });
     }
 
     function updateMapMarkers(list) {
       if (!markersLayer) return;
       markersLayer.clearLayers();
       const bounds = [];
+      if (userMarker && mapInstance) {
+        mapInstance.removeLayer(userMarker);
+        userMarker = null;
+      }
+      if (userCircle && mapInstance) {
+        mapInstance.removeLayer(userCircle);
+        userCircle = null;
+      }
+      if (userLocation && mapInstance) {
+        const uIcon = L.divIcon({
+          className: "user-pin",
+          html: `<div style="background:#2563EB;color:#fff;font-weight:700;font-size:11px;padding:3px 8px;border-radius:999px;border:2px solid #fff;box-shadow:0 2px 8px rgba(37,99,235,0.5);white-space:nowrap;">📍 Bạn ở đây</div>`,
+          iconSize: [90, 24],
+          iconAnchor: [45, 12]
+        });
+        userMarker = L.marker([userLocation.lat, userLocation.lng], { icon: uIcon, zIndexOffset: 1000 })
+          .addTo(mapInstance)
+          .bindPopup(`<strong>Vị trí hiện tại của bạn</strong><br/><span style="font-size:12px;">${userLocation.label}</span>`);
+        if (nearRadiusKm !== "all") {
+          userCircle = L.circle([userLocation.lat, userLocation.lng], {
+            radius: Number(nearRadiusKm) * 1000,
+            color: "#2563EB",
+            weight: 1.5,
+            fillColor: "#3B82F6",
+            fillOpacity: 0.08
+          }).addTo(mapInstance);
+        }
+        bounds.push([userLocation.lat, userLocation.lng]);
+      }
       list.forEach(r => {
         const icon = L.divIcon({
           className: "custom-pin",
@@ -871,7 +1234,7 @@
       document.getElementById("categorySelect").value = "all";
       document.getElementById("streetSelect").value = "all";
       document.getElementById("priceSelect").value = "all";
-      document.getElementById("sortSelect").value = "reviews-desc";
+      document.getElementById("sortSelect").value = userLocation ? "distance-asc" : "reviews-desc";
       currentStreet = "all";
       setDistrictFilter("all");
     }
@@ -880,9 +1243,19 @@
       const q = document.getElementById("searchInput").value.trim().toLowerCase();
       const cat = document.getElementById("categorySelect").value;
       const price = document.getElementById("priceSelect").value;
-      const sort = document.getElementById("sortSelect").value;
+      let sort = document.getElementById("sortSelect").value;
+      if (sort === "distance-asc" && !userLocation) {
+        toggleNearMePanel(true);
+        return;
+      }
 
       const filtered = RESTAURANTS.filter(r => {
+        if (userLocation) {
+          r._distanceKm = haversineKm(userLocation.lat, userLocation.lng, r.lat, r.lng);
+          if (nearRadiusKm !== "all" && r._distanceKm > Number(nearRadiusKm)) return false;
+        } else {
+          r._distanceKm = null;
+        }
         if (currentDistrict !== "all" && r.district !== currentDistrict) return false;
         if (currentStreet !== "all" && r.streetTag !== currentStreet) return false;
         if (cat !== "all" && r.categoryKey !== cat) return false;
@@ -898,6 +1271,9 @@
       });
 
       filtered.sort((a, b) => {
+        if (sort === "distance-asc" && userLocation) {
+          return (a._distanceKm ?? 9999) - (b._distanceKm ?? 9999);
+        }
         if (sort === "reviews-desc") return b.reviewCount - a.reviewCount;
         if (sort === "rating-desc") return b.rating - a.rating || b.reviewCount - a.reviewCount;
         if (sort === "price-asc") return a.minPrice - b.minPrice;
@@ -905,7 +1281,9 @@
         return 0;
       });
 
-      document.getElementById("resultsCountText").textContent = `${filtered.length} quán`;
+      document.getElementById("resultsCountText").textContent = userLocation && nearRadiusKm !== "all"
+        ? `${filtered.length} quán trong bán kính ${nearRadiusKm} km`
+        : `${filtered.length} quán`;
       renderCards(filtered);
       if (mapInstance) updateMapMarkers(filtered);
     }
@@ -930,6 +1308,9 @@
         const bads = (r.reviews || []).filter(x => x.type === "bad");
         const firstGood = goods[0] ? goods[0].text : "";
         const firstBad = bads[0] ? bads[0].text : "";
+        const distBadgeHtml = typeof r._distanceKm === "number"
+          ? `<span class="dist-badge">📍 Cách ${formatDistance(r._distanceKm)}</span>`
+          : "";
         return `
           <article class="rest-card" onclick="openModal('${r.id}')">
             <div class="card-thumb">
@@ -943,6 +1324,7 @@
                 <span>${r.category}</span>
                 <span>·</span>
                 <span class="card-price">${cleanPrice}</span>
+                ${distBadgeHtml}
               </div>
               <div class="card-info">
                 <div class="card-info-row">
@@ -961,7 +1343,10 @@
               </div>
               <div class="card-footer">
                 <button class="btn-card" onclick="event.stopPropagation();openModal('${r.id}')">Xem ${goods.length} khen & ${bads.length} chê →</button>
-                <button class="btn-card-secondary" onclick="focusOnMap('${r.id}', event)">Bản đồ</button>
+                <div style="display:flex;gap:6px;">
+                  <a class="btn-card-secondary" href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="text-decoration:none;">Chỉ đường ↗</a>
+                  <button class="btn-card-secondary" onclick="focusOnMap('${r.id}', event)">Bản đồ</button>
+                </div>
               </div>
             </div>
           </article>
@@ -976,14 +1361,16 @@
       const modalBody = document.getElementById("modalBody");
       const goods = (r.reviews || []).filter(x => x.type === "good");
       const bads = (r.reviews || []).filter(x => x.type === "bad");
+      const distKm = userLocation ? haversineKm(userLocation.lat, userLocation.lng, r.lat, r.lng) : null;
 
       modalBody.innerHTML = `
         <div style="display:grid;grid-template-columns:220px 1fr;gap:18px;margin-bottom:18px;">
           <img src="${r.image}" alt="${r.name}" style="width:100%;height:165px;object-fit:cover;border-radius:10px;border:1px solid var(--border);" onerror="this.src='evidence/cua-gmaps-binhthanh.png'" />
           <div style="font-size:13.5px;display:flex;flex-direction:column;gap:6px;">
-            <div>
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
               <span style="background:var(--surface-muted);padding:3px 8px;border-radius:5px;font-size:12px;font-weight:600;">${r.district} · ${r.subArea}</span>
-              <span style="background:var(--surface-muted);padding:3px 8px;border-radius:5px;font-size:12px;margin-left:4px;">${r.category}</span>
+              <span style="background:var(--surface-muted);padding:3px 8px;border-radius:5px;font-size:12px;">${r.category}</span>
+              ${distKm !== null ? `<span class="dist-badge">📍 Cách bạn ${formatDistance(distKm)}</span>` : ""}
             </div>
             <div><strong>Địa chỉ:</strong> ${r.address}</div>
             <div><strong>Mức giá:</strong> <span style="color:var(--price);font-weight:600;">${r.priceRange}</span> ${r.priceNote ? `<span style="color:var(--text-muted);font-size:12.5px;">(${r.priceNote})</span>` : ""}</div>
@@ -991,6 +1378,7 @@
             <div><strong>Giờ mở cửa:</strong> ${r.hours}</div>
             <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;">
               <a href="${r.url}" target="_blank" rel="noopener" class="btn-solid" style="padding:6px 12px;font-size:12.5px;">Mở trên ${r.source} ↗</a>
+              <a href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" class="btn-outline" style="padding:6px 12px;font-size:12.5px;text-decoration:none;">🧭 Chỉ đường từ chỗ tôi ↗</a>
               <button class="btn-outline" style="padding:6px 12px;font-size:12.5px;" onclick="closeModal();focusOnMap('${r.id}')">Xem trên bản đồ</button>
             </div>
           </div>
@@ -1050,7 +1438,14 @@
     function spinRandomRestaurant() {
       const area = document.getElementById("randArea").value;
       const budget = document.getElementById("randBudget").value;
+      if (area === "near-me" && !userLocation) {
+        toggleNearMePanel(true);
+      }
       const pool = RESTAURANTS.filter(r => {
+        if (area === "near-me") {
+          if (!userLocation) return true;
+          return haversineKm(userLocation.lat, userLocation.lng, r.lat, r.lng) <= 3;
+        }
         if (area !== "all" && r.district !== area) return false;
         if (budget !== "all" && r.priceTier !== budget) return false;
         return true;
@@ -1062,9 +1457,12 @@
         return;
       }
       const winner = pool[Math.floor(Math.random() * pool.length)];
+      const distInfo = userLocation
+        ? ` · <span class="dist-badge">📍 Cách ${formatDistance(haversineKm(userLocation.lat, userLocation.lng, winner.lat, winner.lng))}</span>`
+        : "";
       box.innerHTML = `
         <div>
-          <div style="font-weight:700;font-size:14.5px;">🎯 Gợi ý: ${winner.name} <span style="color:var(--star);">★ ${winner.rating}</span></div>
+          <div style="font-weight:700;font-size:14.5px;">🎯 Gợi ý: ${winner.name} <span style="color:var(--star);">★ ${winner.rating}</span>${distInfo}</div>
           <div style="font-size:12.5px;color:var(--text-secondary);margin-top:2px;">${winner.district} (${winner.subArea}) · ${winner.address} · <strong style="color:var(--price);">${winner.priceRange}</strong></div>
         </div>
         <button class="btn-solid" style="padding:6px 12px;font-size:12.5px;" onclick="openModal('${winner.id}')">Xem quán này →</button>
