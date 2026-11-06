@@ -4,7 +4,7 @@
 
 ## 🌐 Đường dẫn triển khai trên Vercel
 
-- **Tên miền chính thức (Dễ nhớ):** [https://homnayangi-sg.vercel.app](https://homnayangi-sg.vercel.app) · [https://homnayangi-nt.vercel.app](https://homnayangi-nt.vercel.app) · [https://angi-homnay.vercel.app](https://angi-homnay.vercel.app)
+- **Tên miền chính thức (Dễ nhớ):** [https://homnayangi-sg.vercel.app](https://homnayangi-sg.vercel.app) · [https://homnayangi-nt.vercel.app](https://homnayangi-nt.vercel.app)
 - **Kho mã nguồn GitHub:** [https://github.com/ngoctam169/homnayangi](https://github.com/ngoctam169/homnayangi)
 
 ## 📁 Cấu trúc mã nguồn đã khôi phục
