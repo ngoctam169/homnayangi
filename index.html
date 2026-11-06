@@ -396,14 +396,13 @@
       margin-bottom: 10px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+      flex-wrap: wrap;
+      gap: 4px 8px;
     }
 
     .card-price {
       font-weight: 600;
       color: var(--price);
-      white-space: nowrap;
     }
 
     .card-info {
@@ -877,6 +876,7 @@
 
       grid.innerHTML = list.map(r => {
         const dishes = (r.signatureDishes || []).slice(0, 3).map(d => `<span class="dish-pill">${d}</span>`).join("");
+        const cleanPrice = (r.priceRange || "").replace(/\s*\([^)]*\)/g, "");
         return `
           <article class="rest-card" onclick="openModal('${r.id}')">
             <div class="card-thumb">
@@ -888,7 +888,8 @@
               <h3 class="card-title">${r.name}</h3>
               <div class="card-subline">
                 <span>${r.category}</span>
-                <span class="card-price">${r.priceRange}</span>
+                <span>·</span>
+                <span class="card-price">${cleanPrice}</span>
               </div>
               <div class="card-info">
                 <div class="card-info-row">
