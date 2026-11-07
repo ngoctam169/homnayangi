@@ -682,6 +682,89 @@
       color: var(--text-secondary);
     }
 
+    .cmt-rec-box {
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      border-radius: 8px;
+      padding: 7px 10px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #92400E;
+      line-height: 1.45;
+    }
+
+    .cmt-rec-box strong {
+      color: #78350F;
+    }
+
+    .modal-menu-box {
+      display: none;
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+    }
+
+    .modal-menu-box.open {
+      display: block;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .menu-item-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .menu-item-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .menu-best-badge {
+      background: #FEF3C7;
+      color: #B45309;
+      border: 1px solid #FDE68A;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .menu-item-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .menu-item-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--price);
+      white-space: nowrap;
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
     .site-footer {
       border-top: 1px solid var(--border);
       background: var(--surface);
@@ -701,6 +784,9 @@
       .reviews-two-col {
         grid-template-columns: 1fr;
       }
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 560px) {
@@ -718,7 +804,7 @@
       <div class="header-inner">
         <div>
           <div class="brand-title">🍜 Hôm Nay Ăn Gì?</div>
-          <div class="brand-sub">341 quán ăn chọn lọc tại Bình Thạnh, Phú Nhuận, Gò Vấp, Quận 6, Bình Tân & Tân Phú</div>
+          <div class="brand-sub">399 quán ăn & thực đơn chọn lọc (kèm 63 quán từ Cmt TikTok, IG, FB) tại Bình Thạnh, Phú Nhuận, Gò Vấp, Q.6, Bình Tân & Tân Phú</div>
         </div>
         <div class="header-actions">
           <button class="btn-outline active" id="btnToggleNearMe" onclick="toggleNearMePanel()">📍 Quán gần tôi</button>
@@ -859,18 +945,19 @@
       <!-- DISTRICT TABS -->
       <div class="district-tabs-row">
         <div class="district-tabs" id="districtPills">
-          <button class="tab-btn active" data-district="all" onclick="setDistrictFilter('all')">Tất cả (341)</button>
-          <button class="tab-btn" data-district="Bình Thạnh" onclick="setDistrictFilter('Bình Thạnh')">Bình Thạnh (79)</button>
-          <button class="tab-btn" data-district="Phú Nhuận" onclick="setDistrictFilter('Phú Nhuận')">Phú Nhuận (67)</button>
-          <button class="tab-btn" data-district="Quận 6" onclick="setDistrictFilter('Quận 6')">Quận 6 (50)</button>
-          <button class="tab-btn" data-district="Bình Tân" onclick="setDistrictFilter('Bình Tân')">Bình Tân (46)</button>
-          <button class="tab-btn" data-district="Gò Vấp" onclick="setDistrictFilter('Gò Vấp')">Gò Vấp (40)</button>
-          <button class="tab-btn" data-district="Tân Phú" onclick="setDistrictFilter('Tân Phú')">Tân Phú (40)</button>
+          <button class="tab-btn active" data-district="all" onclick="setDistrictFilter('all')">Tất cả (399)</button>
+          <button class="tab-btn" data-district="cmt-recommended" onclick="setDistrictFilter('cmt-recommended')">💬 Cmt Đề Xuất (63)</button>
+          <button class="tab-btn" data-district="Bình Thạnh" onclick="setDistrictFilter('Bình Thạnh')">Bình Thạnh (98)</button>
+          <button class="tab-btn" data-district="Phú Nhuận" onclick="setDistrictFilter('Phú Nhuận')">Phú Nhuận (88)</button>
+          <button class="tab-btn" data-district="Quận 6" onclick="setDistrictFilter('Quận 6')">Quận 6 (55)</button>
+          <button class="tab-btn" data-district="Bình Tân" onclick="setDistrictFilter('Bình Tân')">Bình Tân (50)</button>
+          <button class="tab-btn" data-district="Gò Vấp" onclick="setDistrictFilter('Gò Vấp')">Gò Vấp (45)</button>
+          <button class="tab-btn" data-district="Tân Phú" onclick="setDistrictFilter('Tân Phú')">Tân Phú (44)</button>
           <button class="tab-btn" data-district="Gần Bình Thạnh" onclick="setDistrictFilter('Gần Bình Thạnh')">Gần Bình Thạnh (19)</button>
         </div>
 
         <div class="results-meta">
-          <span id="resultsCountText">341 quán</span>
+          <span id="resultsCountText">399 quán</span>
           <button class="reset-link" onclick="resetAllFilters()">Đặt lại</button>
         </div>
       </div>
@@ -888,7 +975,10 @@
     <div class="modal-dialog">
       <div class="modal-header">
         <strong id="modalTitle" style="font-size:16px;">Chi tiết quán ăn</strong>
-        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="btn-outline" id="btnHeaderMenu" onclick="toggleModalMenu()" style="padding:5px 11px;font-size:12.5px;font-weight:600;">📋 Menu quán</button>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
       </div>
       <div class="modal-body" id="modalBody"></div>
     </div>
@@ -897,7 +987,7 @@
   <!-- SIMPLE FOOTER -->
   <footer class="site-footer">
     <div class="container">
-      Hôm Nay Ăn Gì? — Tổng hợp 341 quán ăn tại Bình Thạnh, Phú Nhuận, Gò Vấp, Quận 6, Bình Tân & Tân Phú ·
+      Hôm Nay Ăn Gì? — Tổng hợp 399 quán ăn kèm thực đơn & bình luận đa nền tảng (TikTok, Instagram, Facebook, Threads, YouTube, Google Maps) ·
       <button class="reset-link" onclick="downloadCSV()">Tải danh sách Excel (CSV)</button>
     </div>
   </footer>
@@ -945,9 +1035,12 @@
         r._firstBad = bads[0] ? bads[0].text : "";
         r._reviewCountFmt = (r.reviewCount || 0).toLocaleString("vi-VN");
         r._ratingFmt = (r.rating || 0).toFixed(1);
+        const menuNames = (r.menu || []).map(m => m.name);
+        const cmtText = r.recommendedByCmt ? `${r.recommendedByCmt.platform} ${r.recommendedByCmt.text}` : "";
         r._searchHay = [
           r.name, r.district, r.subArea, r.address, r.category,
-          ...(r.signatureDishes || []), ...(r.highlights || [])
+          cmtText,
+          ...(r.signatureDishes || []), ...(r.highlights || []), ...menuNames
         ].join(" ").toLowerCase();
         if (r.image && r.image.includes("googleusercontent.com")) {
           r._thumbUrl = r.image.replace(/=w\d+-h\d+[^"&]*/, "=w360-h220-k-no");
@@ -1229,6 +1322,7 @@
             <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:6px;border-top:1px solid var(--border);font-size:12px;">
               <span style="color:var(--price);font-weight:600;">${r._cleanPrice}</span>
               <div style="display:flex;gap:8px;align-items:center;">
+                <button onclick="event.stopPropagation();openModal('${r.id}', true)" style="background:#ECFDF5;color:#047857;border:1px solid #A7F3D0;border-radius:5px;padding:2px 7px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;">📋 Menu</button>
                 <span style="font-weight:600;color:var(--text);">Chi tiết →</span>
                 <a href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#1D4ED8;font-weight:600;text-decoration:none;">Chỉ đường ↗</a>
               </div>
@@ -1399,7 +1493,11 @@
       const sort = document.getElementById("sortSelect").value;
 
       const filtered = RESTAURANTS.filter(r => {
-        if (currentDistrict !== "all" && r.district !== currentDistrict) return false;
+        if (currentDistrict === "cmt-recommended") {
+          if (!r.isCmtRecommended) return false;
+        } else if (currentDistrict !== "all" && r.district !== currentDistrict) {
+          return false;
+        }
         if (currentStreet !== "all" && r.streetTag !== currentStreet) return false;
         if (cat !== "all" && r.categoryKey !== cat) return false;
         if (price !== "all" && r.priceTier !== price) return false;
@@ -1431,11 +1529,15 @@
       const distBadgeHtml = typeof r._distanceKm === "number"
         ? `<span class="dist-badge">📍 Cách ${r._distanceFmt}</span>`
         : "";
+      const cmtBoxHtml = r.recommendedByCmt
+        ? `<div class="cmt-rec-box"><strong>${r.recommendedByCmt.platform}:</strong> "${r.recommendedByCmt.text}"</div>`
+        : "";
+      const menuCount = (r.menu || []).length;
       return `
         <article class="rest-card" onclick="openModal('${r.id}')">
           <div class="card-thumb">
             <img src="${r._thumbUrl}" alt="${r.name}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=FALLBACK_THUMB;" />
-            <span class="card-badge-area">${r.district}</span>
+            <span class="card-badge-area">${r.district}${r.isCmtRecommended ? " · 💬 Cmt" : ""}</span>
             <span class="card-badge-rating"><span class="star">★</span> ${r._ratingFmt} <small>(${r._reviewCountFmt})</small></span>
           </div>
           <div class="card-content">
@@ -1457,6 +1559,7 @@
               </div>
             </div>
             <div class="card-dishes">${r._dishesHtml}</div>
+            ${cmtBoxHtml}
             <div class="card-review-summary">
               <div class="card-rv-line"><strong>👍 Khen (${r._goods.length}):</strong> ${r._firstGood}</div>
               <div class="card-rv-line"><strong>👎 Chê (${r._bads.length}):</strong> ${r._firstBad}</div>
@@ -1464,6 +1567,7 @@
             <div class="card-footer">
               <button class="btn-card" onclick="event.stopPropagation();openModal('${r.id}')">Xem ${r._goods.length} khen & ${r._bads.length} chê →</button>
               <div style="display:flex;gap:6px;">
+                <button class="btn-card-secondary" onclick="event.stopPropagation();openModal('${r.id}', true)" style="font-weight:600;color:#047857;background:#ECFDF5;">📋 Menu (${menuCount})</button>
                 <a class="btn-card-secondary" href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="text-decoration:none;">Chỉ đường ↗</a>
                 <button class="btn-card-secondary" onclick="focusOnMap('${r.id}', event)">Bản đồ</button>
               </div>
@@ -1515,14 +1619,63 @@
       }
     }
 
-    function openModal(id) {
+    function toggleModalMenu(forceOpen) {
+      const box = document.getElementById("modalMenuBox");
+      const btn = document.getElementById("btnToggleModalMenu");
+      const headerBtn = document.getElementById("btnHeaderMenu");
+      if (!box) return;
+      const count = box.getAttribute("data-count") || "0";
+      const isOpen = typeof forceOpen === "boolean"
+        ? (box.classList.toggle("open", forceOpen), forceOpen)
+        : box.classList.toggle("open");
+      if (btn) {
+        btn.textContent = isOpen
+          ? `📋 Ẩn Menu & Bảng Giá (${count} món) ▲`
+          : `📋 Xem Menu & Bảng Giá (${count} món) ▼`;
+      }
+      if (headerBtn) {
+        headerBtn.classList.toggle("active", isOpen);
+        headerBtn.textContent = isOpen ? `📋 Đang mở Menu (${count} món)` : `📋 Menu quán (${count} món)`;
+      }
+      if (isOpen) {
+        box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+
+    function openModal(id, autoShowMenu) {
       const r = RESTAURANT_BY_ID.get(id);
       if (!r) return;
       document.getElementById("modalTitle").textContent = r.name;
       const modalBody = document.getElementById("modalBody");
       const goods = r._goods || [];
       const bads = r._bads || [];
+      const menuList = r.menu || [];
       const distKm = r._distanceKm;
+      const headerBtn = document.getElementById("btnHeaderMenu");
+      if (headerBtn) {
+        headerBtn.classList.remove("active");
+        headerBtn.textContent = `📋 Menu quán (${menuList.length} món)`;
+      }
+
+      const cmtModalHtml = r.recommendedByCmt
+        ? `<div class="cmt-rec-box" style="margin-bottom:16px;font-size:13px;">
+             <div><strong>${r.recommendedByCmt.platform}</strong> · Người bình luận: <strong>${r.recommendedByCmt.author}</strong></div>
+             <div style="margin-top:3px;">"${r.recommendedByCmt.text}"</div>
+           </div>`
+        : "";
+
+      const menuItemsHtml = menuList.map(m => `
+        <div class="menu-item-card">
+          <div>
+            <div class="menu-item-name">
+              <span>${m.name}</span>
+              ${m.bestSeller ? `<span class="menu-best-badge">★ Best-Seller</span>` : ""}
+            </div>
+            <div class="menu-item-desc">${m.group ? `${m.group} · ` : ""}${m.desc || ""}</div>
+          </div>
+          <span class="menu-item-price">${m.price}</span>
+        </div>
+      `).join("");
 
       modalBody.innerHTML = `
         <div style="display:grid;grid-template-columns:220px 1fr;gap:18px;margin-bottom:18px;">
@@ -1535,14 +1688,25 @@
             </div>
             <div><strong>Địa chỉ:</strong> ${r.address}</div>
             <div><strong>Mức giá:</strong> <span style="color:var(--price);font-weight:600;">${r.priceRange}</span> ${r.priceNote ? `<span style="color:var(--text-muted);font-size:12.5px;">(${r.priceNote})</span>` : ""}</div>
-            <div><strong>Đánh giá:</strong> <span style="color:var(--star);font-weight:700;">★ ${r.rating}</span> (${r._reviewCountFmt} lượt trên Google Maps, TikTok, FB, Threads & Foody)</div>
+            <div><strong>Đánh giá:</strong> <span style="color:var(--star);font-weight:700;">★ ${r.rating}</span> (${r._reviewCountFmt} lượt trên Google Maps & Cmt TikTok, Instagram, FB, Threads, YouTube)</div>
             <div><strong>Giờ mở cửa:</strong> ${r.hours}</div>
             <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn-solid" id="btnToggleModalMenu" onclick="toggleModalMenu()" style="padding:6px 12px;font-size:12.5px;background:#047857;border-color:#047857;">📋 Xem Menu & Bảng Giá (${menuList.length} món) ▼</button>
               <a href="${r.url}" target="_blank" rel="noopener" class="btn-solid" style="padding:6px 12px;font-size:12.5px;">Mở trên ${r.source} ↗</a>
               <a href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" class="btn-outline" style="padding:6px 12px;font-size:12.5px;text-decoration:none;">🧭 Chỉ đường từ chỗ tôi ↗</a>
               <button class="btn-outline" style="padding:6px 12px;font-size:12.5px;" onclick="closeModal();focusOnMap('${r.id}')">Xem trên bản đồ</button>
             </div>
           </div>
+        </div>
+
+        ${cmtModalHtml}
+
+        <div class="modal-menu-box" id="modalMenuBox" data-count="${menuList.length}">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+            <div style="font-weight:700;font-size:14px;color:var(--text);">📋 Thực đơn & Bảng giá tham khảo — ${r.name}</div>
+            <span style="font-size:11.5px;color:var(--text-muted);background:#fff;border:1px solid var(--border);padding:2px 8px;border-radius:4px;">Nguồn: ${r.menuSource || "Google Maps · ShopeeFood · Fanpage"}</span>
+          </div>
+          <div class="menu-grid">${menuItemsHtml}</div>
         </div>
 
         <div style="background:var(--surface-muted);padding:14px;border-radius:10px;margin-bottom:18px;font-size:13.5px;">
@@ -1590,6 +1754,9 @@
         </div>
       `;
       document.getElementById("detailModal").classList.add("open");
+      if (autoShowMenu) {
+        toggleModalMenu(true);
+      }
     }
 
     function closeModal() {
