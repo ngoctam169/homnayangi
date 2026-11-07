@@ -884,7 +884,7 @@
       <div class="header-inner">
         <div>
           <div class="brand-title">🍜 Hôm Nay Ăn Gì?</div>
-          <div class="brand-sub">502 quán ăn & thực đơn đầy đủ (110 tuyến đường riêng lẻ) tại Bình Thạnh, Phú Nhuận, Gò Vấp, Quận 6, Bình Tân & Tân Phú</div>
+          <div class="brand-sub">Tổng hợp 502 quán ăn, thực đơn & đánh giá thực tế tại Bình Thạnh, Phú Nhuận, Gò Vấp, Quận 6, Bình Tân & Tân Phú</div>
         </div>
         <div class="header-actions">
           <button class="btn-outline active" id="btnToggleNearMe" onclick="toggleNearMePanel()">📍 Quán gần tôi</button>
@@ -985,48 +985,72 @@
         <select id="categorySelect" class="filter-select" onchange="applyFilters()">
           <option value="all">Tất cả loại món</option>
           <option value="com-viet">Cơm tấm & Món Việt</option>
+          <option value="sub:com-tam">— Cơm tấm Sài Gòn</option>
+          <option value="sub:bo-ne-bit-tet">— Bò né, Bít tết & Bánh mì chảo</option>
+          <option value="sub:banh-mi-xoi">— Bánh mì & Xôi</option>
+          <option value="sub:bun-dau-nem-nuong">— Bún đậu, Nem nướng & Cuốn</option>
+          <option value="sub:banh-xeo-banh-cuon">— Bánh xèo, Bánh căn & Bánh bèo</option>
+          <option value="sub:banh-cuon">— Bánh cuốn nóng & Chả mực</option>
           <option value="mon-nuoc">Bún, Phở & Món nước</option>
+          <option value="sub:pho">— Phở bò & Phở gà</option>
+          <option value="sub:bun-nuoc">— Bún bò, Bún riêu & Bún mắm</option>
+          <option value="sub:banh-canh">— Bánh canh cua, Cá lóc & Ghẹ</option>
+          <option value="sub:mi-vit-tiem-sui-cao">— Mì vịt tiềm, Mì gia & Sủi cảo</option>
+          <option value="sub:hu-tieu-mi-banh-canh">— Hủ tiếu, Bò kho & Cháo lòng</option>
+          <option value="sub:mi-quang-mon-hue">— Mì Quảng & Món miền Trung</option>
           <option value="oc-hai-san">Ốc, Hải sản & Quán nhậu</option>
           <option value="lau-nuong">Lẩu & Nướng BBQ</option>
+          <option value="sub:lau-bo-lau-de">— Lẩu bò & Bò tơ Tây Ninh</option>
+          <option value="sub:lau-de">— Lẩu dê & Đặc sản dê tươi</option>
+          <option value="sub:lau-ga">— Lẩu gà lá é & Lẩu gà ớt hiểm</option>
+          <option value="sub:nuong-bbq">— Thịt nướng BBQ & Lẩu quán nhậu</option>
+          <option value="sub:han-bbq">— Thịt nướng Hàn Quốc BBQ</option>
           <option value="chau-a">Nhật - Hàn - Thái - Hoa</option>
+          <option value="sub:nhat-sushi">— Nhật Bản (Sushi & Sashimi)</option>
+          <option value="sub:hoa-dimsum">— Trung Hoa & Dimsum</option>
+          <option value="sub:han-quoc">— Mì cay, Tokbokki & Món Hàn</option>
+          <option value="sub:thai-lan">— Ẩm thực Thái Lan</option>
           <option value="nha-hang">Buffet & Nhà hàng</option>
+          <option value="sub:buffet">— Buffet Lẩu, Nướng & Hải sản</option>
+          <option value="sub:au-steak-pizza">— Steak, Pizza, Burger & Món Âu</option>
+          <option value="sub:ga-ran-fastfood">— Gà rán, Burger & Fastfood</option>
           <option value="an-vat">Ăn vặt, Trà sữa & Cà phê</option>
           <option value="chay">Món Chay</option>
         </select>
 
         <select id="streetSelect" class="filter-select" onchange="setStreetFilter(this.value)">
-          <option value="all">🛣️ Tất cả con đường (110 đường)</option>
+          <option value="all">Tất cả tuyến đường</option>
         </select>
 
         <select id="peopleSelect" class="filter-select" onchange="applyFilters()">
-          <option value="all">👥 Số người: Tất cả</option>
-          <option value="1">👤 Đi 1 người (Ăn cá nhân)</option>
-          <option value="2">👥 Đi 2 người (Cặp đôi / Bạn bè)</option>
-          <option value="3">👨‍👩‍👧 Đi 3 người</option>
-          <option value="4">👨‍👩‍👧‍👦 Đi 4 người (Gia đình / Nhóm)</option>
-          <option value="6">🍻 Đi 5 – 6 người (Nhóm bạn)</option>
-          <option value="10">🎉 Đi 8 – 10+ người (Liên hoan)</option>
+          <option value="all">Số người: Tất cả</option>
+          <option value="1">Đi 1 người</option>
+          <option value="2">Đi 2 người</option>
+          <option value="3">Đi 3 người</option>
+          <option value="4">Đi 4 người</option>
+          <option value="6">Đi 5 – 6 người</option>
+          <option value="10">Đi 8 – 10+ người</option>
         </select>
 
         <select id="expectedBudgetSelect" class="filter-select" onchange="applyFilters()">
-          <option value="all">💰 Tiền dự kiến: Mọi mức</option>
-          <option value="50000">💰 Dự kiến ≤ 50.000đ</option>
-          <option value="100000">💰 Dự kiến ≤ 100.000đ</option>
-          <option value="150000">💰 Dự kiến ≤ 150.000đ</option>
-          <option value="200000">💰 Dự kiến ≤ 200.000đ</option>
-          <option value="300000">💰 Dự kiến ≤ 300.000đ</option>
-          <option value="500000">💰 Dự kiến ≤ 500.000đ</option>
-          <option value="800000">💰 Dự kiến ≤ 800.000đ</option>
-          <option value="1000000">💰 Dự kiến ≤ 1.000.000đ</option>
-          <option value="1500000">💰 Dự kiến ≤ 1.500.000đ</option>
-          <option value="2500000">💰 Dự kiến ≤ 2.500.000đ</option>
+          <option value="all">Tiền dự kiến: Mọi mức</option>
+          <option value="50000">Dự kiến ≤ 50.000đ</option>
+          <option value="100000">Dự kiến ≤ 100.000đ</option>
+          <option value="150000">Dự kiến ≤ 150.000đ</option>
+          <option value="200000">Dự kiến ≤ 200.000đ</option>
+          <option value="300000">Dự kiến ≤ 300.000đ</option>
+          <option value="500000">Dự kiến ≤ 500.000đ</option>
+          <option value="800000">Dự kiến ≤ 800.000đ</option>
+          <option value="1000000">Dự kiến ≤ 1.000.000đ</option>
+          <option value="1500000">Dự kiến ≤ 1.500.000đ</option>
+          <option value="2500000">Dự kiến ≤ 2.500.000đ</option>
         </select>
 
         <select id="priceSelect" class="filter-select" onchange="applyFilters()">
-          <option value="all">Phân khúc giá/người: Tất cả</option>
-          <option value="binh-dan">Bình dân (&lt; 100.000đ/người)</option>
-          <option value="tam-trung">Tầm trung (100k – 350k/người)</option>
-          <option value="cao-cap">Cao cấp (&gt; 350.000đ/người)</option>
+          <option value="all">Mọi mức giá</option>
+          <option value="binh-dan">Dưới 100.000đ</option>
+          <option value="tam-trung">100.000đ – 350.000đ</option>
+          <option value="cao-cap">Trên 350.000đ</option>
         </select>
 
         <select id="sortSelect" class="filter-select" onchange="applyFilters()">
@@ -1056,10 +1080,6 @@
           <button class="reset-link" onclick="resetAllFilters()">Đặt lại</button>
         </div>
       </div>
-
-      <!-- INDIVIDUAL STREET QUICK CHIPS -->
-      <div class="street-chips-row" id="quickStreetPills"></div>
-      <div id="budgetSummaryNotice" style="display:none;margin-top:10px;padding:8px 12px;border-radius:8px;background:#EFF6FF;border:1px solid #BFDBFE;font-size:12.5px;color:#1E3A8A;"></div>
     </section>
 
     <!-- RESTAURANT CARDS -->
@@ -1152,7 +1172,6 @@
         r._distanceFmt = "";
       }
       populateStreetOptions();
-      renderQuickStreetChips();
     }
 
     function populateStreetOptions() {
@@ -1177,48 +1196,21 @@
         const entries = Object.entries(byDistStreet[d] || {}).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "vi"));
         if (!entries.length) return;
         totalStreets += entries.length;
-        html += `<optgroup label="📍 ${d} (${entries.length} con đường)">`;
+        html += `<optgroup label="${d} (${entries.length} đường)">`;
         entries.forEach(([stName, cnt]) => {
           const selectedAttr = stName === currentStreet ? " selected" : "";
-          html += `<option value="${stName}"${selectedAttr}>${stName} (${cnt} quán)</option>`;
+          html += `<option value="${stName}"${selectedAttr}>${stName} (${cnt})</option>`;
         });
         html += `</optgroup>`;
       });
 
-      sel.innerHTML = `<option value="all">🛣️ Tất cả con đường (${totalStreets} đường)</option>` + html;
+      sel.innerHTML = `<option value="all">Tất cả tuyến đường (${totalStreets})</option>` + html;
       if (currentStreet !== "all" && !sel.querySelector(`option[value="${CSS.escape(currentStreet)}"]`)) {
         currentStreet = "all";
         sel.value = "all";
       } else {
         sel.value = currentStreet;
       }
-    }
-
-    function renderQuickStreetChips() {
-      const wrap = document.getElementById("quickStreetPills");
-      if (!wrap) return;
-      const counts = {};
-      for (let i = 0; i < RESTAURANTS.length; i++) {
-        const r = RESTAURANTS[i];
-        if (currentDistrict === "cmt-recommended") {
-          if (!r.isCmtRecommended) continue;
-        } else if (currentDistrict !== "all" && r.district !== currentDistrict) {
-          continue;
-        }
-        counts[r.street] = (counts[r.street] || 0) + 1;
-      }
-      const sortedStreets = Object.entries(counts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "vi"));
-      const limit = currentDistrict === "all" ? 14 : 25;
-      const topStreets = sortedStreets.slice(0, limit);
-
-      let chipsHtml = `<span style="font-size:12px;font-weight:600;color:var(--text-muted);margin-right:2px;">🛣️ Chọn nhanh từng đường:</span>`;
-      chipsHtml += `<button class="street-chip ${currentStreet === "all" ? "active" : ""}" onclick="setStreetFilter('all')">Mọi con đường (${sortedStreets.length})</button>`;
-      topStreets.forEach(([st, cnt]) => {
-        const shortLabel = st.replace(/^Đường\s+/i, "");
-        const isAct = currentStreet === st ? "active" : "";
-        chipsHtml += `<button class="street-chip ${isAct}" onclick="setStreetFilter('${st.replace(/'/g, "\\'")}')">${shortLabel} (${cnt})</button>`;
-      });
-      wrap.innerHTML = chipsHtml;
     }
 
     function onSearchInput() {
@@ -1637,7 +1629,6 @@
         btn.classList.toggle("active", btn.getAttribute("data-district") === district);
       });
       populateStreetOptions();
-      renderQuickStreetChips();
       applyFilters();
     }
 
@@ -1645,7 +1636,6 @@
       currentStreet = street;
       const sel = document.getElementById("streetSelect");
       if (sel) sel.value = street;
-      renderQuickStreetChips();
       applyFilters();
     }
 
@@ -1671,22 +1661,6 @@
       const nPeople = peopleVal === "all" ? 1 : Number(peopleVal);
       const expectedBudget = budgetVal === "all" ? null : Number(budgetVal);
 
-      const noticeEl = document.getElementById("budgetSummaryNotice");
-      if (noticeEl) {
-        if (peopleVal !== "all" || budgetVal !== "all") {
-          noticeEl.style.display = "block";
-          const pText = peopleVal === "all" ? "1 người (mặc định)" : `${nPeople} người`;
-          if (expectedBudget) {
-            const perPerson = expectedBudget >= nPeople * 25000 ? Math.round(expectedBudget / nPeople) : expectedBudget;
-            noticeEl.innerHTML = `👥 <strong>Đang lọc theo kế hoạch đi ăn:</strong> Số người: <strong>${pText}</strong> · Số tiền dự kiến: <strong>≤ ${expectedBudget.toLocaleString("vi-VN")}đ</strong> (~<strong>${perPerson.toLocaleString("vi-VN")}đ/người</strong>). Trên mỗi quán bên dưới có tính sẵn tổng chi phí dự kiến cho ${pText}.`;
-          } else {
-            noticeEl.innerHTML = `👥 <strong>Đang tính chi phí dự kiến cho nhóm ${nPeople} người:</strong> Mỗi thẻ quán bên dưới hiển thị tự động tổng tiền dự kiến khi đi <strong>${nPeople} người</strong>. Bạn có thể chọn thêm <strong>Tiền dự kiến</strong> để lọc theo ngân sách tổng.`;
-          }
-        } else {
-          noticeEl.style.display = "none";
-        }
-      }
-
       const filtered = RESTAURANTS.filter(r => {
         if (currentDistrict === "cmt-recommended") {
           if (!r.isCmtRecommended) return false;
@@ -1694,7 +1668,13 @@
           return false;
         }
         if (currentStreet !== "all" && r.street !== currentStreet && r.streetTag !== currentStreet) return false;
-        if (cat !== "all" && r.categoryKey !== cat) return false;
+        if (cat !== "all") {
+          if (cat.startsWith("sub:")) {
+            if (r.subCuisineKey !== cat.slice(4)) return false;
+          } else if (r.categoryKey !== cat) {
+            return false;
+          }
+        }
         if (price !== "all" && r.priceTier !== price) return false;
         if (expectedBudget !== null) {
           const maxPerPerson = expectedBudget >= nPeople * 25000 ? (expectedBudget / nPeople) : expectedBudget;
@@ -1733,20 +1713,10 @@
       const distBadgeHtml = typeof r._distanceKm === "number"
         ? `<span class="dist-badge">📍 Cách ${r._distanceFmt}</span>`
         : "";
-      const cmtBoxHtml = r.recommendedByCmt
-        ? `<div class="cmt-rec-box"><strong>${r.recommendedByCmt.platform}:</strong> "${r.recommendedByCmt.text}"</div>`
-        : "";
-      const menuCount = (r.menu || []).length;
       const peopleVal = (document.getElementById("peopleSelect") || {}).value || "all";
-      const nPeople = peopleVal === "all" ? 2 : Number(peopleVal);
-      const estMin = (r.minPrice || 35000) * nPeople;
-      const estMax = (r.maxPrice || 65000) * nPeople;
-      const estBillHtml = `
-        <div class="est-bill-pill">
-          <span>👥 Dự kiến ${nPeople} người: <strong>${estMin.toLocaleString("vi-VN")} – ${estMax.toLocaleString("vi-VN")}đ</strong></span>
-          <span style="font-size:11px;font-weight:500;color:#047857;">(~${(r.minPrice || 35000).toLocaleString("vi-VN")}đ/người)</span>
-        </div>
-      `;
+      const peopleInlineHtml = peopleVal !== "all"
+        ? `<span>·</span><span style="color:#047857;font-weight:600;">${peopleVal} người: ~${((r.minPrice || 35000) * Number(peopleVal)).toLocaleString("vi-VN")}đ</span>`
+        : "";
       return `
         <article class="rest-card" onclick="openModal('${r.id}')">
           <div class="card-thumb">
@@ -1760,21 +1730,20 @@
               <span>${r.category}</span>
               <span>·</span>
               <span class="card-price">${r._cleanPrice}</span>
+              ${peopleInlineHtml}
               ${distBadgeHtml}
             </div>
             <div class="card-info">
               <div class="card-info-row">
-                <span>🛣️</span>
-                <span><strong>${r.street}</strong> — ${r.address}</span>
+                <span>📍</span>
+                <span>${r.address}</span>
               </div>
               <div class="card-info-row">
                 <span>🕒</span>
                 <span>${r.hours}</span>
               </div>
             </div>
-            ${estBillHtml}
             <div class="card-dishes">${r._dishesHtml}</div>
-            ${cmtBoxHtml}
             <div class="card-review-summary">
               <div class="card-rv-line"><strong>👍 Khen (${r._goods.length}):</strong> ${r._firstGood}</div>
               <div class="card-rv-line"><strong>👎 Chê (${r._bads.length}):</strong> ${r._firstBad}</div>
@@ -1782,7 +1751,7 @@
             <div class="card-footer">
               <button class="btn-card" onclick="event.stopPropagation();openModal('${r.id}')">Xem ${r._goods.length} khen & ${r._bads.length} chê →</button>
               <div style="display:flex;gap:6px;">
-                <button class="btn-card-secondary" onclick="event.stopPropagation();openModal('${r.id}', true)" style="font-weight:600;color:#047857;background:#ECFDF5;">📋 Menu (${menuCount})</button>
+                <button class="btn-card-secondary" onclick="event.stopPropagation();openModal('${r.id}', true)" style="font-weight:600;color:#047857;background:#ECFDF5;">📋 Menu</button>
                 <a class="btn-card-secondary" href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="text-decoration:none;">Chỉ đường ↗</a>
                 <button class="btn-card-secondary" onclick="focusOnMap('${r.id}', event)">Bản đồ</button>
               </div>
@@ -1918,39 +1887,18 @@
            </div>`
         : "";
 
-      // Group menu items by section so all 18 dishes display clearly by category
-      const groupsMap = new Map();
-      menuList.forEach(m => {
-        const g = m.group || "Thực đơn chính";
-        if (!groupsMap.has(g)) groupsMap.set(g, []);
-        groupsMap.get(g).push(m);
-      });
-
-      let groupedMenuHtml = "";
-      for (const [gTitle, items] of groupsMap.entries()) {
-        groupedMenuHtml += `
-          <div class="menu-section-block">
-            <div class="menu-section-title">
-              <span>${gTitle}</span>
-              <span style="font-size:11.5px;font-weight:500;color:var(--text-secondary);">${items.length} món</span>
+      const menuItemsHtml = menuList.map(m => `
+        <div class="menu-item-card">
+          <div>
+            <div class="menu-item-name">
+              <span>${m.name}</span>
+              ${m.bestSeller ? `<span class="menu-best-badge">★ Best-Seller</span>` : ""}
             </div>
-            <div class="menu-grid">
-              ${items.map(m => `
-                <div class="menu-item-card">
-                  <div>
-                    <div class="menu-item-name">
-                      <span>${m.name}</span>
-                      ${m.bestSeller ? `<span class="menu-best-badge">★ Best-Seller</span>` : ""}
-                    </div>
-                    <div class="menu-item-desc">${m.desc || ""}</div>
-                  </div>
-                  <span class="menu-item-price">${m.price}</span>
-                </div>
-              `).join("")}
-            </div>
+            <div class="menu-item-desc">${m.desc || ""}</div>
           </div>
-        `;
-      }
+          <span class="menu-item-price">${m.price}</span>
+        </div>
+      `).join("");
 
       modalBody.innerHTML = `
         <div style="display:grid;grid-template-columns:220px 1fr;gap:18px;margin-bottom:18px;">
@@ -1978,24 +1926,10 @@
 
         <div class="modal-menu-box" id="modalMenuBox" data-count="${menuList.length}">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-            <div style="font-weight:700;font-size:14.5px;color:var(--text);">📋 Thực đơn đầy đủ (${menuList.length} món) — ${r.name}</div>
+            <div style="font-weight:700;font-size:14px;color:var(--text);">📋 Thực đơn & Bảng giá tham khảo — ${r.name}</div>
             <span style="font-size:11.5px;color:var(--text-muted);background:#fff;border:1px solid var(--border);padding:2px 8px;border-radius:4px;">Nguồn: ${r.menuSource || "Google Maps · ShopeeFood · Fanpage"}</span>
           </div>
-          <div class="menu-calc-bar">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-              <strong>🧮 Ước tính hóa đơn & Gợi ý gọi món theo số người:</strong>
-              <select id="modalPeopleCalc" onchange="updateModalGroupCombo()" style="padding:4px 8px;border-radius:6px;border:1px solid #93C5FD;font-size:12px;font-family:inherit;background:#fff;">
-                <option value="1" ${defaultModalPeople === 1 ? "selected" : ""}>👤 Đi 1 người</option>
-                <option value="2" ${defaultModalPeople === 2 ? "selected" : ""}>👥 Đi 2 người</option>
-                <option value="3" ${defaultModalPeople === 3 ? "selected" : ""}>👨‍👩‍👧 Đi 3 người</option>
-                <option value="4" ${defaultModalPeople === 4 ? "selected" : ""}>👨‍👩‍👧‍👦 Đi 4 người</option>
-                <option value="6" ${defaultModalPeople === 6 ? "selected" : ""}>🍻 Đi 6 người</option>
-                <option value="10" ${defaultModalPeople === 10 ? "selected" : ""}>🎉 Đi 10 người</option>
-              </select>
-            </div>
-            <div id="modalComboSuggestion"></div>
-          </div>
-          ${groupedMenuHtml}
+          <div class="menu-grid">${menuItemsHtml}</div>
         </div>
 
         <div style="background:var(--surface-muted);padding:14px;border-radius:10px;margin-bottom:18px;font-size:13.5px;">
@@ -2043,7 +1977,6 @@
         </div>
       `;
       document.getElementById("detailModal").classList.add("open");
-      updateModalGroupCombo();
       if (autoShowMenu) {
         toggleModalMenu(true);
       }
