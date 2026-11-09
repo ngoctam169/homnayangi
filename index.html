@@ -3,34 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hôm Nay Ăn Gì? — Quán Ngon Sài Gòn</title>
+  <title>Hôm Nay Ăn Gì? — Bản Đồ & Đánh Giá Quán Ngon Sài Gòn</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     :root {
-      --bg: #F8FAFC;
+      --bg: #FAF8F5;
       --surface: #FFFFFF;
-      --surface-muted: #F1F5F9;
-      --text: #0F172A;
-      --text-secondary: #475569;
-      --text-muted: #64748B;
-      --border: #E2E8F0;
-      --border-hover: #CBD5E1;
-      --accent: #0F172A;
-      --accent-soft: #F1F5F9;
+      --surface-soft: #F5F2ED;
+      --surface-hover: #EFECE6;
+      --text: #18181B;
+      --text-secondary: #52525B;
+      --text-muted: #71717A;
+      --border: #E7E3DC;
+      --border-strong: #D4CFC7;
+      --brand: #EA580C;
+      --brand-hover: #C2410C;
+      --brand-soft: #FFF7ED;
+      --brand-border: #FED7AA;
+      --accent-dark: #18181B;
       --star: #D97706;
+      --star-bg: #FFFBEB;
       --price: #047857;
-      --radius: 12px;
+      --price-bg: #ECFDF5;
+      --good: #15803D;
+      --good-bg: #F0FDF4;
+      --bad: #B91C1C;
+      --bad-bg: #FEF2F2;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 2px 8px rgba(24, 24, 27, 0.04);
+      --shadow-md: 0 10px 26px rgba(24, 24, 27, 0.08);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { overflow-x: hidden; }
     body {
       font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
@@ -39,1040 +49,438 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    .container {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
+    .container { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
 
     /* HEADER */
     .site-header {
-      background: var(--surface);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
-      padding: 16px 0;
+      padding: 12px 0;
       position: sticky;
       top: 0;
-      z-index: 40;
+      z-index: 50;
     }
-
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
+    .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand-wrap { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .brand-logo {
+      width: 40px; height: 40px; border-radius: 11px;
+      background: var(--brand); color: #FFFFFF;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(234, 88, 12, 0.25);
     }
-
-    .brand-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .brand-title-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .brand-title { font-size: 18px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; line-height: 1.3; }
+    .brand-count-badge {
+      background: var(--brand-soft); color: var(--brand); border: 1px solid var(--brand-border);
+      font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap;
     }
-
-    .brand-sub {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 2px;
+    .brand-sub { font-size: 12.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .btn-pill {
+      background: var(--surface); color: var(--text); border: 1px solid var(--border-strong);
+      padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      white-space: nowrap; font-family: inherit; transition: all 0.15s ease;
     }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .btn-pill:hover { background: var(--surface-soft); border-color: var(--text-secondary); }
+    .btn-pill.active { background: var(--accent-dark); color: #FFFFFF; border-color: var(--accent-dark); }
+    .btn-primary {
+      background: var(--brand); color: #FFFFFF; border: 1px solid var(--brand);
+      padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 700;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      white-space: nowrap; text-decoration: none; font-family: inherit; transition: background 0.15s ease;
     }
+    .btn-primary:hover { background: var(--brand-hover); }
 
-    .btn-outline {
-      background: var(--surface);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 13.5px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.15s, border-color 0.15s;
-      font-family: inherit;
+    /* COLLAPSIBLE DRAWERS */
+    .drawer-panel {
+      display: none; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 16px 18px; margin-top: 14px; box-shadow: var(--shadow-sm);
     }
-
-    .btn-outline:hover {
-      background: var(--surface-muted);
-      border-color: var(--border-hover);
+    .drawer-panel.open { display: block; }
+    .drawer-top-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+    .drawer-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .drawer-controls select {
+      padding: 7px 11px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+      font-size: 13px; font-family: inherit; color: var(--text); background: var(--surface); outline: none; cursor: pointer;
     }
-
-    .btn-outline.active {
-      background: var(--accent);
-      color: #FFFFFF;
-      border-color: var(--accent);
+    .near-recs-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .near-mini-card {
+      background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 10px; display: flex; gap: 10px; align-items: center; cursor: pointer;
+      transition: all 0.15s ease; min-width: 0;
     }
-
-    .btn-solid {
-      background: var(--accent);
-      color: #FFFFFF;
-      border: 1px solid var(--accent);
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 13.5px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-      font-family: inherit;
-      transition: opacity 0.15s;
+    .near-mini-card:hover { background: var(--surface); border-color: var(--brand); box-shadow: var(--shadow-sm); }
+    .near-mini-thumb { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #E4E4E7; }
+    .near-mini-body { flex: 1; min-width: 0; }
+    .near-mini-title { font-size: 13.5px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; }
+    .near-mini-meta { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; margin-top: 2px; white-space: nowrap; }
+    .near-mini-price { font-size: 12px; font-weight: 700; color: var(--price); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dist-pill {
+      display: inline-flex; align-items: center; gap: 3px; background: #EFF6FF; color: #1D4ED8;
+      border: 1px solid #BFDBFE; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;
     }
+    #saigonMap { width: 100%; height: 390px; border-radius: var(--radius-md); border: 1px solid var(--border); }
 
-    .btn-solid:hover {
-      opacity: 0.9;
+    /* UNIFIED FILTER HUB */
+    .filter-hub {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 16px 18px; margin: 16px 0 20px; box-shadow: var(--shadow-sm);
     }
-
-    /* COLLAPSIBLE PANELS (RANDOM PICKER & MAP) */
-    .collapse-panel {
-      display: none;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-top: 16px;
+    .filter-main-row { display: grid; grid-template-columns: minmax(0, 1.9fr) minmax(0, 1.05fr) minmax(0, 1.05fr) minmax(0, 0.9fr) minmax(0, 0.95fr); gap: 10px; align-items: center; }
+    .search-box { position: relative; }
+    .search-box input {
+      width: 100%; padding: 10px 14px 10px 38px; border: 1px solid var(--border-strong); border-radius: 10px;
+      font-size: 13.5px; font-family: inherit; color: var(--text); background: var(--surface-soft); outline: none; transition: all 0.15s;
     }
-
-    .collapse-panel.open {
-      display: block;
-    }
-
-    .random-bar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .random-bar select {
-      padding: 8px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 13.5px;
-      font-family: inherit;
-      color: var(--text);
-      background: var(--surface);
-    }
-
-    .random-result-box {
-      margin-top: 12px;
-      padding: 12px 14px;
-      background: var(--surface-muted);
-      border-radius: 8px;
-      font-size: 13.5px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    #saigonMap {
-      width: 100%;
-      height: 380px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-    }
-
-    /* NEAR ME PANEL & DISTANCE BADGES */
-    .near-header-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-
-    .near-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .near-controls select {
-      padding: 8px 11px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 13px;
-      font-family: inherit;
-      color: var(--text);
-      background: var(--surface);
-      outline: none;
-      cursor: pointer;
-    }
-
-    .near-status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12.5px;
-      padding: 5px 10px;
-      border-radius: 6px;
-      background: var(--surface-muted);
-      color: var(--text-secondary);
-      border: 1px solid var(--border);
-    }
-
-    .near-status-pill.active {
-      background: #EFF6FF;
-      color: #1D4ED8;
-      border-color: #BFDBFE;
-      font-weight: 500;
-    }
-
-    .near-recs-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .near-rec-card {
-      background: var(--surface-muted);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 11px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-    }
-
-    .near-rec-card:hover {
-      background: #FFFFFF;
-      border-color: var(--border-hover);
-    }
-
-    .dist-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: #EFF6FF;
-      color: #1D4ED8;
-      border: 1px solid #BFDBFE;
-      font-size: 11.5px;
-      font-weight: 600;
-      padding: 2px 7px;
-      border-radius: 5px;
-    }
-
-    /* FILTER BAR */
-    .filter-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin: 20px 0 16px;
-    }
-
-    .filter-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
-
-    .search-wrap {
-      position: relative;
-      grid-column: span 2;
-    }
-
-    .search-wrap input {
-      width: 100%;
-      padding: 9px 12px 9px 34px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 13.5px;
-      font-family: inherit;
-      color: var(--text);
-      outline: none;
-    }
-
-    .search-wrap input:focus,
-    .filter-select:focus {
-      border-color: var(--text-secondary);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 11px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 14px;
-      color: var(--text-muted);
-      pointer-events: none;
-    }
-
+    .search-box input:focus { background: var(--surface); border-color: var(--brand); box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.12); }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--text-muted); pointer-events: none; }
     .filter-select {
       width: 100%;
-      padding: 9px 10px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 13px;
-      font-family: inherit;
-      color: var(--text);
-      background: var(--surface);
-      outline: none;
-      cursor: pointer;
+      min-width: 0;
+      text-overflow: ellipsis; padding: 10px 11px; border: 1px solid var(--border-strong); border-radius: 10px;
+      font-size: 13px; font-weight: 500; font-family: inherit; color: var(--text); background: var(--surface); outline: none; cursor: pointer;
     }
-
-    /* DISTRICT TABS */
-    .district-tabs-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-      flex-wrap: wrap;
+    .filter-select:focus { border-color: var(--brand); }
+    .category-chips-row { display: flex; align-items: center; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 12px 0 4px; }
+    .category-chips-row::-webkit-scrollbar { display: none; }
+    .cat-chip {
+      background: var(--surface-soft); color: var(--text-secondary); border: 1px solid transparent;
+      padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer;
+      white-space: nowrap; font-family: inherit; transition: all 0.15s; flex-shrink: 0;
     }
-
-    .district-tabs {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
+    .cat-chip:hover { background: var(--surface-hover); color: var(--text); }
+    .cat-chip.active { background: var(--brand-soft); color: var(--brand); border-color: var(--brand-border); }
+    .district-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .district-pills { display: flex; align-items: center; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; min-width: 0; }
+    .district-pills::-webkit-scrollbar { display: none; }
     .tab-btn {
-      background: transparent;
-      color: var(--text-secondary);
-      border: 1px solid transparent;
-      padding: 5px 11px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.15s;
+      background: transparent; color: var(--text-secondary); border: 1px solid transparent;
+      padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+      white-space: nowrap; font-family: inherit; transition: all 0.15s; flex-shrink: 0;
     }
+    .tab-btn:hover { background: var(--surface-soft); color: var(--text); }
+    .tab-btn.active { background: var(--accent-dark); color: #FFFFFF; }
+    .results-meta { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; flex-shrink: 0; }
+    .reset-link { background: none; border: none; color: var(--brand); font-size: 12.5px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+    .reset-link:hover { text-decoration: underline; }
 
-    .tab-btn:hover {
-      background: var(--surface-muted);
-      color: var(--text);
-    }
-
-    .tab-btn.active {
-      background: var(--accent);
-      color: #FFFFFF;
-      font-weight: 600;
-    }
-
-    .results-meta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .reset-link {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 12.5px;
-      text-decoration: underline;
-      cursor: pointer;
-      font-family: inherit;
-    }
-
-    /* CARDS GRID */
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 16px;
-      margin-bottom: 40px;
-    }
-
+    /* CLEAN RESTAURANT CARDS */
+    .cards-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-bottom: 36px; }
     .rest-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: border-color 0.12s;
-      cursor: pointer;
-      content-visibility: auto;
-      contain-intrinsic-size: 0 380px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; display: flex; flex-direction: column; cursor: pointer;
+      box-shadow: var(--shadow-sm); transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease; min-width: 0;
     }
-
-    .rest-card:hover {
-      border-color: var(--border-hover);
-    }
-
-    .card-thumb {
-      position: relative;
-      height: 156px;
-      background: var(--surface-muted);
-      overflow: hidden;
-    }
-
-    .card-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
+    .rest-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
+    .card-thumb { position: relative; height: 176px; background: var(--surface-soft); overflow: hidden; }
+    .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.35s ease; }
+    .rest-card:hover .card-thumb img { transform: scale(1.04); }
     .card-badge-area {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(15, 23, 42, 0.88);
-      color: #FFFFFF;
-      font-size: 11.5px;
-      font-weight: 500;
-      padding: 3px 9px;
-      border-radius: 6px;
+      position: absolute; top: 12px; left: 12px; background: rgba(24, 24, 27, 0.84); backdrop-filter: blur(6px);
+      color: #FFFFFF; font-size: 11.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px; white-space: nowrap;
     }
-
     .card-badge-rating {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(255, 255, 255, 0.95);
-      color: var(--text);
-      font-size: 12px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      position: absolute; top: 12px; right: 12px; background: rgba(255, 255, 255, 0.96); color: var(--text);
+      font-size: 12.5px; font-weight: 700; padding: 4px 9px; border-radius: 999px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;
     }
-
-    .card-badge-rating .star {
-      color: var(--star);
+    .card-badge-rating .star { color: var(--star); }
+    .card-badge-rating small { font-weight: 500; color: var(--text-muted); font-size: 11.5px; }
+    .card-badge-dist {
+      position: absolute; bottom: 10px; left: 12px; background: rgba(255, 255, 255, 0.94); color: #1D4ED8;
+      font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12); white-space: nowrap;
     }
-
-    .card-badge-rating small {
-      font-weight: 400;
-      color: var(--text-muted);
-    }
-
-    .card-content {
-      padding: 14px 16px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
-
+    .card-content { padding: 16px; display: flex; flex-direction: column; flex: 1; min-width: 0; }
     .card-title {
-      font-size: 15.5px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 4px;
-      line-height: 1.35;
+      font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.45; padding-top: 1px;
+      margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-
-    .card-subline {
-      font-size: 13px;
-      color: var(--text-secondary);
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 4px 8px;
+    .card-meta-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+    .card-cat { color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .card-price-tag {
+      font-weight: 700; color: var(--price); background: var(--price-bg); padding: 2px 8px;
+      border-radius: 6px; font-size: 12.5px; white-space: nowrap; flex-shrink: 0;
     }
-
-    .card-price {
-      font-weight: 600;
-      color: var(--price);
-    }
-
-    .card-info {
-      font-size: 12.5px;
-      color: var(--text-muted);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 12px;
-    }
-
-    .card-info-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 6px;
-    }
-
-    .card-info-row span:last-child {
-      display: -webkit-box;
-      -webkit-line-clamp: 1;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .card-dishes {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin-bottom: 14px;
-    }
-
+    .card-addr { font-size: 12.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 10px; }
+    .card-dishes { display: flex; align-items: center; gap: 6px; overflow: hidden; margin-bottom: 12px; }
     .dish-pill {
-      background: var(--surface-muted);
-      color: var(--text-secondary);
-      font-size: 11.5px;
-      padding: 3px 8px;
-      border-radius: 5px;
+      background: var(--surface-soft); color: var(--text-secondary); font-size: 11.5px; font-weight: 500;
+      padding: 3px 9px; border-radius: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;
     }
-
-    .card-review-summary {
-      background: var(--surface-muted);
-      border-radius: 8px;
-      padding: 8px 10px;
-      margin-bottom: 12px;
-      font-size: 12px;
-      color: var(--text-secondary);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    .card-verdict-box {
+      background: var(--surface-soft); border-radius: 10px; padding: 9px 11px;
+      margin-bottom: 14px; display: flex; flex-direction: column; gap: 5px; font-size: 12px;
     }
-
-    .card-rv-line {
-      display: -webkit-box;
-      -webkit-line-clamp: 1;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+    .verdict-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+    .verdict-tag { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+    .verdict-tag.good { background: #DCFCE7; color: #166534; }
+    .verdict-tag.bad { background: #FEE2E2; color: #991B1B; }
+    .verdict-text { color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .card-footer { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .btn-card-primary { background: none; border: none; font-size: 13px; font-weight: 700; color: var(--brand); cursor: pointer; font-family: inherit; white-space: nowrap; padding: 2px 0; }
+    .btn-card-primary:hover { text-decoration: underline; }
+    .card-footer-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .btn-card-chip {
+      background: var(--surface-soft); border: 1px solid var(--border); font-size: 12px; font-weight: 600;
+      color: var(--text); padding: 5px 10px; border-radius: 8px; cursor: pointer; font-family: inherit;
+      white-space: nowrap; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s;
     }
+    .btn-card-chip:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+    .btn-card-chip.menu { background: var(--price-bg); color: var(--price); border-color: #A7F3D0; }
 
-    .card-footer {
-      margin-top: auto;
-      padding-top: 10px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .btn-card {
-      background: none;
-      border: none;
-      font-size: 12.5px;
-      font-weight: 600;
-      color: var(--text);
-      cursor: pointer;
-      font-family: inherit;
-      padding: 2px 0;
-    }
-
-    .btn-card:hover {
-      text-decoration: underline;
-    }
-
-    .btn-card-secondary {
-      background: var(--surface-muted);
-      border: none;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      padding: 4px 9px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-family: inherit;
-    }
-
-    .btn-card-secondary:hover {
-      background: var(--border);
-      color: var(--text);
-    }
-
-    /* MODAL */
+    /* TABBED MODAL */
     .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.5);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 100;
+      position: fixed; inset: 0; background: rgba(24, 24, 27, 0.58); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100;
     }
-
-    .modal-backdrop.open {
-      display: flex;
-    }
-
+    .modal-backdrop.open { display: flex; }
     .modal-dialog {
-      background: var(--surface);
-      border-radius: 14px;
-      max-width: 880px;
-      width: 100%;
-      max-height: 88vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
-      border: 1px solid var(--border);
+      background: var(--surface); border-radius: 20px; max-width: 860px; width: 100%;
+      max-height: 88vh; overflow-y: auto; box-shadow: 0 24px 48px rgba(0, 0, 0, 0.22); border: 1px solid var(--border);
     }
-
     .modal-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      background: var(--surface);
-      z-index: 2;
+      padding: 16px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; position: sticky; top: 0; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(8px); z-index: 5;
     }
-
-    .modal-close {
-      background: var(--surface-muted);
-      border: none;
-      width: 30px;
-      height: 30px;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      color: var(--text-secondary);
+    .modal-close { background: var(--surface-soft); border: none; width: 34px; height: 34px; border-radius: 999px; font-size: 16px; cursor: pointer; color: var(--text-secondary); flex-shrink: 0; }
+    .modal-close:hover { background: var(--surface-hover); color: var(--text); }
+    .modal-body { padding: 22px; }
+    .modal-hero { display: grid; grid-template-columns: 200px 1fr; gap: 18px; margin-bottom: 18px; }
+    .modal-hero-img { width: 100%; height: 150px; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); }
+    .modal-tabs-bar { display: flex; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 18px; overflow-x: auto; }
+    .modal-tab-btn {
+      background: var(--surface-soft); color: var(--text-secondary); border: 1px solid transparent;
+      padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: inherit; transition: all 0.15s;
     }
+    .modal-tab-btn.active { background: var(--accent-dark); color: #FFFFFF; }
+    .modal-tab-pane { display: none; }
+    .modal-tab-pane.active { display: block; }
+    .reviews-two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+    .rv-col-title { font-size: 13.5px; font-weight: 700; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .review-item { padding: 12px 14px; border-radius: 10px; background: var(--good-bg); margin-bottom: 10px; border-left: 3px solid #16A34A; }
+    .review-item.bad { border-left-color: #DC2626; background: var(--bad-bg); }
+    .plat-tag { background: #FFFFFF; border: 1px solid var(--border); padding: 1px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; color: var(--text-secondary); }
+    .menu-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; margin-top: 12px; }
+    .menu-item-card { background: var(--surface-soft); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .menu-item-name { font-size: 13px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .menu-best-badge { background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; font-size: 10.5px; font-weight: 700; padding: 1px 6px; border-radius: 4px; }
+    .menu-item-desc { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+    .menu-item-price { font-size: 13px; font-weight: 700; color: var(--price); white-space: nowrap; background: #FFFFFF; border: 1px solid #A7F3D0; padding: 2px 8px; border-radius: 6px; }
+    .site-footer { border-top: 1px solid var(--border); background: var(--surface); padding: 22px 0; font-size: 13px; color: var(--text-muted); text-align: center; }
 
-    .modal-body {
-      padding: 20px;
+    @media (max-width: 1024px) {
+      .cards-grid, .near-recs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .filter-main-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .search-box { grid-column: 1 / -1; }
     }
-
-    .review-item {
-      padding: 12px 14px;
-      border-radius: 8px;
-      background: var(--surface-muted);
-      margin-bottom: 10px;
-      border-left: 3px solid #16A34A;
-    }
-
-    .review-item.bad {
-      border-left-color: #DC2626;
-      background: #FEF2F2;
-    }
-
-    .reviews-two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .rv-col-title {
-      font-size: 13.5px;
-      font-weight: 700;
-      margin-bottom: 10px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .plat-tag {
-      background: #FFFFFF;
-      border: 1px solid var(--border);
-      padding: 1px 7px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-secondary);
-    }
-
-    .cmt-rec-box {
-      background: #FFFBEB;
-      border: 1px solid #FDE68A;
-      border-radius: 8px;
-      padding: 7px 10px;
-      margin-bottom: 10px;
-      font-size: 12px;
-      color: #92400E;
-      line-height: 1.45;
-    }
-
-    .cmt-rec-box strong {
-      color: #78350F;
-    }
-
-    .modal-menu-box {
-      display: none;
-      background: #F8FAFC;
-      border: 1px solid #CBD5E1;
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin-bottom: 18px;
-    }
-
-    .modal-menu-box.open {
-      display: block;
-    }
-
-    .menu-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .menu-item-card {
-      background: #FFFFFF;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 12px;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .menu-item-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .menu-best-badge {
-      background: #FEF3C7;
-      color: #B45309;
-      border: 1px solid #FDE68A;
-      font-size: 10.5px;
-      font-weight: 700;
-      padding: 1px 6px;
-      border-radius: 4px;
-    }
-
-    .menu-item-desc {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .menu-item-price {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--price);
-      white-space: nowrap;
-      background: #ECFDF5;
-      border: 1px solid #A7F3D0;
-      padding: 2px 8px;
-      border-radius: 6px;
-    }
-
-    .menu-section-block {
-      margin-top: 12px;
-    }
-
-    .menu-section-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text);
-      padding: 5px 10px;
-      background: #E2E8F0;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .menu-calc-bar {
-      background: #EFF6FF;
-      border: 1px solid #BFDBFE;
-      border-radius: 8px;
-      padding: 10px 12px;
-      margin-top: 10px;
-      font-size: 12.5px;
-      color: #1E3A8A;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .street-chips-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px dashed var(--border);
-    }
-
-    .street-chip {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      font-size: 12px;
-      font-weight: 500;
-      padding: 4px 10px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.12s;
-    }
-
-    .street-chip:hover {
-      border-color: var(--border-hover);
-      color: var(--text);
-    }
-
-    .street-chip.active {
-      background: #0F172A;
-      color: #FFFFFF;
-      border-color: #0F172A;
-      font-weight: 600;
-    }
-
-    .est-bill-pill {
-      background: #ECFDF5;
-      border: 1px solid #A7F3D0;
-      color: #065F46;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 5px 9px;
-      border-radius: 7px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
-    .site-footer {
-      border-top: 1px solid var(--border);
-      background: var(--surface);
-      padding: 20px 0;
-      font-size: 13px;
-      color: var(--text-muted);
-      text-align: center;
-    }
-
-    @media (max-width: 900px) {
-      .filter-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-      .search-wrap {
-        grid-column: 1 / -1;
-      }
-      .reviews-two-col {
-        grid-template-columns: 1fr;
-      }
-      .menu-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 560px) {
-      .filter-grid {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 640px) {
+      .container { padding: 0 14px; }
+      .header-inner { flex-direction: column; align-items: stretch; gap: 10px; }
+      .brand-sub { display: none; }
+      .header-actions { width: 100%; overflow-x: auto; padding-bottom: 2px; }
+      .header-actions .btn-pill { flex: 1; justify-content: center; padding: 7px 10px; font-size: 12.5px; }
+      .filter-hub { padding: 12px 14px; margin: 12px 0 16px; }
+      .filter-main-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+      .cards-grid, .near-recs-grid, .modal-hero, .reviews-two-col, .menu-grid { grid-template-columns: minmax(0, 1fr); }
+      .cards-grid { gap: 14px; }
+      .modal-backdrop { padding: 0; align-items: flex-end; }
+      .modal-dialog { border-radius: 20px 20px 0 0; max-height: 92vh; }
+      .modal-hero-img { height: 180px; }
     }
   </style>
 </head>
 <body>
-
-  <!-- CLEAN HEADER -->
   <header class="site-header">
     <div class="container">
       <div class="header-inner">
-        <div>
-          <div class="brand-title">🍜 Hôm Nay Ăn Gì?</div>
-          <div class="brand-sub">Tổng hợp 502 quán ăn, thực đơn & đánh giá thực tế tại Bình Thạnh, Phú Nhuận, Gò Vấp, Quận 6, Bình Tân & Tân Phú</div>
+        <div class="brand-wrap">
+          <div class="brand-logo">🍜</div>
+          <div style="min-width:0;">
+            <div class="brand-title-row">
+              <h1 class="brand-title">Hôm Nay Ăn Gì?</h1>
+              <span class="brand-count-badge">502 quán Sài Gòn</span>
+            </div>
+            <div class="brand-sub">Bình Thạnh · Phú Nhuận · Gò Vấp · Quận 6 · Bình Tân · Tân Phú</div>
+          </div>
         </div>
         <div class="header-actions">
-          <button class="btn-outline active" id="btnToggleNearMe" onclick="toggleNearMePanel()">📍 Quán gần tôi</button>
-          <button class="btn-outline" id="btnToggleRandom" onclick="toggleRandomPanel()">🎲 Chọn ngẫu nhiên</button>
-          <button class="btn-outline" id="btnToggleMap" onclick="toggleMapPanel()">🗺️ Bản đồ</button>
+          <button class="btn-pill" id="btnToggleNearMe" onclick="toggleNearMePanel()">📍 Quán gần tôi</button>
+          <button class="btn-pill" id="btnToggleRandom" onclick="toggleRandomPanel()">🎲 Hôm nay ăn gì?</button>
+          <button class="btn-pill" id="btnToggleMap" onclick="toggleMapPanel()">🗺️ Bản đồ</button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- MAIN CONTENT -->
   <main class="container">
-      <!-- NEARBY LOCATION PANEL (COLLAPSIBLE) -->
-      <div class="collapse-panel open" id="nearMePanel">
-        <div class="near-header-row">
-          <div class="near-controls">
-            <button class="btn-solid" id="btnDetectGps" onclick="detectMyLocation()">📍 Đọc vị trí GPS hiện tại</button>
-            <select id="presetLocationSelect" onchange="selectPresetLocation(this.value)">
-              <option value="10.8014,106.7114,Ngã tư Hàng Xanh (Bình Thạnh)" selected>Điểm đứng: Ngã tư Hàng Xanh (Bình Thạnh)</option>
-              <option value="10.8045,106.7160,Khu D2 Nguyễn Gia Trí - HUTECH (Bình Thạnh)">Khu D2 Nguyễn Gia Trí (Bình Thạnh)</option>
-              <option value="10.8060,106.6960,Chợ Bà Chiểu - Vạn Kiếp (Bình Thạnh)">Chợ Bà Chiểu - Vạn Kiếp (Bình Thạnh)</option>
-              <option value="10.7951,106.7218,Vinhomes Landmark 81 (Bình Thạnh)">Vinhomes Landmark 81 (Bình Thạnh)</option>
-              <option value="10.7985,106.6880,Phố ẩm thực Phan Xích Long (Phú Nhuận)">Phố Phan Xích Long (Phú Nhuận)</option>
-              <option value="10.8270,106.6885,Phan Văn Trị - Emart (Gò Vấp)">Phan Văn Trị - Emart (Gò Vấp)</option>
-              <option value="10.7510,106.6345,Hậu Giang - Phú Lâm (Quận 6)">Hậu Giang - Phú Lâm (Quận 6)</option>
-              <option value="10.7430,106.6125,AEON Mall Khu Tên Lửa (Bình Tân)">AEON Mall Khu Tên Lửa (Bình Tân)</option>
-              <option value="10.7960,106.6315,Tân Sơn Nhì - Lũy Bán Bích (Tân Phú)">Tân Sơn Nhì - Lũy Bán Bích (Tân Phú)</option>
-            </select>
-            <select id="nearRadiusSelect" onchange="onChangeNearRadius(this.value)">
-              <option value="0.5">Bán kính: Dưới 500 m (Đi bộ)</option>
-              <option value="1" selected>Bán kính: Trong vòng 1 km</option>
-              <option value="2">Bán kính: Quanh mức 2 km (1 – 2 km)</option>
-              <option value="3">Bán kính: Quanh mức 3 km (2 – 3 km)</option>
-              <option value="5">Bán kính: Quanh mức 5 km (3 – 5 km)</option>
-              <option value="all-near">Tất cả quán gần (0 – 5 km · Xếp gần → xa)</option>
-            </select>
-            <select id="nearSortSelect" onchange="renderNearRecommendations(true)">
-              <option value="best" selected>Ưu tiên: Đề xuất ngon & nổi bật nhất</option>
-              <option value="closest">Ưu tiên: Khoảng cách gần nhất (m → km)</option>
-              <option value="cheapest">Ưu tiên: Giá bình dân nhất</option>
-            </select>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <span class="near-status-pill active" id="nearStatusText">📍 Vị trí: Ngã tư Hàng Xanh (Bình Thạnh)</span>
-            <button class="reset-link" id="btnClearLocation" onclick="clearUserLocation()">Ẩn khung</button>
-          </div>
+    <section class="drawer-panel" id="nearMePanel">
+      <div class="drawer-top-bar">
+        <div class="drawer-controls">
+          <button class="btn-primary" id="btnDetectGps" onclick="detectMyLocation()">📍 Định vị GPS</button>
+          <select id="presetLocationSelect" onchange="selectPresetLocation(this.value)">
+            <option value="10.8014,106.7114,Ngã tư Hàng Xanh (Bình Thạnh)" selected>Điểm đứng: Ngã tư Hàng Xanh (Bình Thạnh)</option>
+            <option value="10.8045,106.7160,Khu D2 Nguyễn Gia Trí (Bình Thạnh)">Khu D2 Nguyễn Gia Trí (Bình Thạnh)</option>
+            <option value="10.8060,106.6960,Chợ Bà Chiểu - Vạn Kiếp (Bình Thạnh)">Chợ Bà Chiểu - Vạn Kiếp (Bình Thạnh)</option>
+            <option value="10.7951,106.7218,Vinhomes Landmark 81 (Bình Thạnh)">Vinhomes Landmark 81 (Bình Thạnh)</option>
+            <option value="10.7985,106.6880,Phố Phan Xích Long (Phú Nhuận)">Phố Phan Xích Long (Phú Nhuận)</option>
+            <option value="10.8270,106.6885,Phan Văn Trị - Emart (Gò Vấp)">Phan Văn Trị - Emart (Gò Vấp)</option>
+            <option value="10.7510,106.6345,Hậu Giang - Phú Lâm (Quận 6)">Hậu Giang - Phú Lâm (Quận 6)</option>
+            <option value="10.7430,106.6125,AEON Mall Khu Tên Lửa (Bình Tân)">AEON Mall Khu Tên Lửa (Bình Tân)</option>
+            <option value="10.7960,106.6315,Tân Sơn Nhì - Lũy Bán Bích (Tân Phú)">Tân Sơn Nhì - Lũy Bán Bích (Tân Phú)</option>
+          </select>
+          <select id="nearRadiusSelect" onchange="onChangeNearRadius(this.value)">
+            <option value="0.5">Bán kính: &lt; 500 m</option>
+            <option value="1" selected>Bán kính: 1 km</option>
+            <option value="2">Bán kính: 2 km</option>
+            <option value="3">Bán kính: 3 km</option>
+            <option value="5">Bán kính: 5 km</option>
+            <option value="all-near">Tất cả (0 – 5 km)</option>
+          </select>
+          <select id="nearSortSelect" onchange="renderNearRecommendations(true)">
+            <option value="best" selected>Ưu tiên: Ngon & nổi bật</option>
+            <option value="closest">Ưu tiên: Gần nhất</option>
+            <option value="cheapest">Ưu tiên: Giá rẻ nhất</option>
+          </select>
         </div>
-        <div id="nearRecommendBox">
-          <div style="font-size:13px;font-weight:600;color:var(--text-secondary);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-            <span id="nearRecTitle">🎯 Đề xuất quán ngon gần vị trí của bạn:</span>
-            <span style="font-size:12px;font-weight:400;color:var(--text-muted);">Độc lập với bộ lọc danh sách bên dưới · Bấm vào quán để xem 5 khen & 5 chê</span>
-          </div>
-          <div class="near-recs-grid" id="nearRecsGrid"></div>
-          <div id="nearMoreWrap" style="display:none;text-align:center;margin-top:12px;">
-            <button class="btn-outline" id="btnNearMore" onclick="showMoreNearRecommendations()" style="padding:6px 16px;font-size:12.5px;">Xem thêm quán đề xuất trong bán kính này ↓</button>
-          </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="dist-pill" id="nearStatusText">📍 Ngã tư Hàng Xanh</span>
+          <button class="reset-link" onclick="clearUserLocation()">Đóng ✕</button>
         </div>
       </div>
+      <div id="nearRecommendBox">
+        <div style="font-size:12.5px;font-weight:600;color:var(--text-secondary);margin-bottom:10px;" id="nearRecTitle"></div>
+        <div class="near-recs-grid" id="nearRecsGrid"></div>
+        <div id="nearMoreWrap" style="display:none;text-align:center;margin-top:12px;">
+          <button class="btn-pill" id="btnNearMore" onclick="showMoreNearRecommendations()" style="font-size:12px;padding:6px 14px;">Xem thêm quán gần đây ↓</button>
+        </div>
+      </div>
+    </section>
 
-      <!-- INLINE RANDOM PICKER (COLLAPSIBLE) -->
-      <div class="collapse-panel" id="randomPanel">
-        <div class="random-bar">
-          <strong style="font-size:13.5px;">Hôm nay chưa biết ăn gì?</strong>
+    <section class="drawer-panel" id="randomPanel">
+      <div class="drawer-top-bar" style="margin-bottom:0;">
+        <div class="drawer-controls">
+          <strong style="font-size:13.5px;">🎲 Chưa biết ăn gì? Để hệ thống chọn giúp:</strong>
           <select id="randArea">
-            <option value="all">Mọi khu vực (7 quận)</option>
-            <option value="near-me">📍 Quán gần vị trí của tôi (&lt; 3km)</option>
-            <option value="Bình Thạnh">Quận Bình Thạnh (79)</option>
-            <option value="Phú Nhuận">Quận Phú Nhuận (67)</option>
-            <option value="Quận 6">Quận 6 (50)</option>
-            <option value="Bình Tân">Quận Bình Tân (46)</option>
-            <option value="Gò Vấp">Quận Gò Vấp (40)</option>
-            <option value="Tân Phú">Quận Tân Phú (40)</option>
-            <option value="Gần Bình Thạnh">Gần Bình Thạnh (19)</option>
+            <option value="all">Mọi khu vực</option>
+            <option value="near-me">📍 Gần vị trí của tôi (&lt; 3km)</option>
+            <option value="Bình Thạnh">Bình Thạnh</option>
+            <option value="Phú Nhuận">Phú Nhuận</option>
+            <option value="Gò Vấp">Gò Vấp</option>
+            <option value="Quận 6">Quận 6</option>
+            <option value="Bình Tân">Bình Tân</option>
+            <option value="Tân Phú">Tân Phú</option>
           </select>
           <select id="randBudget">
             <option value="all">Mọi mức giá</option>
-            <option value="binh-dan">Bình dân (&lt; 100.000đ)</option>
+            <option value="binh-dan">Bình dân (&lt; 100k)</option>
             <option value="tam-trung">Tầm trung (100k – 350k)</option>
-            <option value="cao-cap">Cao cấp / Buffet (&gt; 350k)</option>
+            <option value="cao-cap">Buffet / Nhà hàng (&gt; 350k)</option>
           </select>
-          <button class="btn-solid" onclick="spinRandomRestaurant()">Quay chọn quán</button>
+          <button class="btn-primary" onclick="spinRandomRestaurant()">Quay ngay</button>
         </div>
-        <div id="randomResult" class="random-result-box" style="display:none;"></div>
+        <button class="reset-link" onclick="toggleRandomPanel()">Đóng ✕</button>
       </div>
+      <div id="randomResult" style="display:none;margin-top:12px;padding:12px 14px;background:var(--surface-soft);border-radius:12px;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;"></div>
+    </section>
 
-      <!-- MAP PANEL (COLLAPSIBLE) -->
-      <div class="collapse-panel" id="mapPanel">
-        <div id="saigonMap"></div>
+    <section class="drawer-panel" id="mapPanel">
+      <div class="drawer-top-bar">
+        <strong style="font-size:13.5px;">🗺️ Bản đồ quán ăn (Bấm vào điểm bất kỳ trên bản đồ để đo khoảng cách)</strong>
+        <button class="reset-link" onclick="toggleMapPanel(false)">Đóng bản đồ ✕</button>
       </div>
-    <!-- FILTER BOX -->
-    <section class="filter-box">
-      <div class="filter-grid">
-        <div class="search-wrap">
+      <div id="saigonMap"></div>
+    </section>
+
+    <section class="filter-hub">
+      <div class="filter-main-row">
+        <div class="search-box">
           <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" placeholder="Tìm tên quán, món ăn (cơm tấm, phở, ốc, lẩu...), tên đường..." oninput="onSearchInput()" />
+          <input type="text" id="searchInput" placeholder="Tìm tên quán, món ăn (cơm tấm, phở, lẩu, ốc...), tên đường..." oninput="onSearchInput()" />
         </div>
 
-        <select id="categorySelect" class="filter-select" onchange="applyFilters()">
-          <option value="all">Tất cả loại món</option>
+        <select id="categorySelect" class="filter-select" onchange="onCategorySelectChange(this.value)">
+          <option value="all">🍜 Tất cả loại món</option>
           <option value="com-viet">Cơm tấm & Món Việt</option>
           <option value="sub:com-tam">— Cơm tấm Sài Gòn</option>
-          <option value="sub:bo-ne-bit-tet">— Bò né, Bít tết & Bánh mì chảo</option>
+          <option value="sub:bo-ne-bit-tet">— Bò né & Bánh mì chảo</option>
           <option value="sub:banh-mi-xoi">— Bánh mì & Xôi</option>
-          <option value="sub:bun-dau-nem-nuong">— Bún đậu, Nem nướng & Cuốn</option>
-          <option value="sub:banh-xeo-banh-cuon">— Bánh xèo, Bánh căn & Bánh bèo</option>
-          <option value="sub:banh-cuon">— Bánh cuốn nóng & Chả mực</option>
+          <option value="sub:bun-dau-nem-nuong">— Bún đậu & Nem nướng</option>
+          <option value="sub:banh-xeo-banh-cuon">— Bánh xèo & Bánh căn</option>
+          <option value="sub:banh-cuon">— Bánh cuốn nóng</option>
           <option value="mon-nuoc">Bún, Phở & Món nước</option>
           <option value="sub:pho">— Phở bò & Phở gà</option>
-          <option value="sub:bun-nuoc">— Bún bò, Bún riêu & Bún mắm</option>
-          <option value="sub:banh-canh">— Bánh canh cua, Cá lóc & Ghẹ</option>
-          <option value="sub:mi-vit-tiem-sui-cao">— Mì vịt tiềm, Mì gia & Sủi cảo</option>
-          <option value="sub:hu-tieu-mi-banh-canh">— Hủ tiếu, Bò kho & Cháo lòng</option>
-          <option value="sub:mi-quang-mon-hue">— Mì Quảng & Món miền Trung</option>
-          <option value="oc-hai-san">Ốc, Hải sản & Quán nhậu</option>
+          <option value="sub:bun-nuoc">— Bún bò, Bún riêu, Bún mắm</option>
+          <option value="sub:banh-canh">— Bánh canh cua & Ghẹ</option>
+          <option value="sub:mi-vit-tiem-sui-cao">— Mì vịt tiềm & Sủi cảo</option>
+          <option value="sub:hu-tieu-mi-banh-canh">— Hủ tiếu & Cháo lòng</option>
+          <option value="sub:mi-quang-mon-hue">— Mì Quảng & Món Huế</option>
           <option value="lau-nuong">Lẩu & Nướng BBQ</option>
-          <option value="sub:lau-bo-lau-de">— Lẩu bò & Bò tơ Tây Ninh</option>
-          <option value="sub:lau-de">— Lẩu dê & Đặc sản dê tươi</option>
-          <option value="sub:lau-ga">— Lẩu gà lá é & Lẩu gà ớt hiểm</option>
-          <option value="sub:nuong-bbq">— Thịt nướng BBQ & Lẩu quán nhậu</option>
-          <option value="sub:han-bbq">— Thịt nướng Hàn Quốc BBQ</option>
-          <option value="chau-a">Nhật - Hàn - Thái - Hoa</option>
-          <option value="sub:nhat-sushi">— Nhật Bản (Sushi & Sashimi)</option>
+          <option value="sub:lau-bo-lau-de">— Lẩu bò & Bò tơ</option>
+          <option value="sub:lau-de">— Lẩu dê tươi</option>
+          <option value="sub:lau-ga">— Lẩu gà lá é / ớt hiểm</option>
+          <option value="sub:nuong-bbq">— Thịt nướng BBQ</option>
+          <option value="sub:han-bbq">— Nướng Hàn Quốc</option>
+          <option value="oc-hai-san">Ốc, Hải sản & Quán nhậu</option>
+          <option value="chau-a">Nhật · Hàn · Thái · Hoa</option>
+          <option value="sub:nhat-sushi">— Nhật Bản (Sushi/Sashimi)</option>
           <option value="sub:hoa-dimsum">— Trung Hoa & Dimsum</option>
-          <option value="sub:han-quoc">— Mì cay, Tokbokki & Món Hàn</option>
-          <option value="sub:thai-lan">— Ẩm thực Thái Lan</option>
+          <option value="sub:han-quoc">— Món Hàn & Tokbokki</option>
+          <option value="sub:thai-lan">— Món Thái Lan</option>
           <option value="nha-hang">Buffet & Nhà hàng</option>
-          <option value="sub:buffet">— Buffet Lẩu, Nướng & Hải sản</option>
-          <option value="sub:au-steak-pizza">— Steak, Pizza, Burger & Món Âu</option>
-          <option value="sub:ga-ran-fastfood">— Gà rán, Burger & Fastfood</option>
-          <option value="an-vat">Ăn vặt, Trà sữa & Cà phê</option>
+          <option value="sub:buffet">— Buffet Lẩu Nướng</option>
+          <option value="sub:au-steak-pizza">— Steak, Pizza & Món Âu</option>
+          <option value="sub:ga-ran-fastfood">— Gà rán & Fastfood</option>
+          <option value="an-vat">Ăn vặt, Trà sữa & Cafe</option>
           <option value="chay">Món Chay</option>
         </select>
 
         <select id="streetSelect" class="filter-select" onchange="setStreetFilter(this.value)">
-          <option value="all">Tất cả tuyến đường</option>
-        </select>
-
-        <select id="peopleSelect" class="filter-select" onchange="applyFilters()">
-          <option value="all">Số người: Tất cả</option>
-          <option value="1">Đi 1 người</option>
-          <option value="2">Đi 2 người</option>
-          <option value="3">Đi 3 người</option>
-          <option value="4">Đi 4 người</option>
-          <option value="6">Đi 5 – 6 người</option>
-          <option value="10">Đi 8 – 10+ người</option>
-        </select>
-
-        <select id="expectedBudgetSelect" class="filter-select" onchange="applyFilters()">
-          <option value="all">Tiền dự kiến: Mọi mức</option>
-          <option value="50000">Dự kiến ≤ 50.000đ</option>
-          <option value="100000">Dự kiến ≤ 100.000đ</option>
-          <option value="150000">Dự kiến ≤ 150.000đ</option>
-          <option value="200000">Dự kiến ≤ 200.000đ</option>
-          <option value="300000">Dự kiến ≤ 300.000đ</option>
-          <option value="500000">Dự kiến ≤ 500.000đ</option>
-          <option value="800000">Dự kiến ≤ 800.000đ</option>
-          <option value="1000000">Dự kiến ≤ 1.000.000đ</option>
-          <option value="1500000">Dự kiến ≤ 1.500.000đ</option>
-          <option value="2500000">Dự kiến ≤ 2.500.000đ</option>
+          <option value="all">🛣️ Tuyến đường</option>
         </select>
 
         <select id="priceSelect" class="filter-select" onchange="applyFilters()">
-          <option value="all">Mọi mức giá</option>
-          <option value="binh-dan">Dưới 100.000đ</option>
-          <option value="tam-trung">100.000đ – 350.000đ</option>
-          <option value="cao-cap">Trên 350.000đ</option>
+          <option value="all">💰 Mọi mức giá</option>
+          <option value="under-50">Siêu rẻ (≤ 50k/người)</option>
+          <option value="binh-dan">Bình dân (&lt; 100k/người)</option>
+          <option value="tam-trung">Tầm trung (100k – 350k)</option>
+          <option value="cao-cap">Cao cấp / Buffet (&gt; 350k)</option>
         </select>
 
         <select id="sortSelect" class="filter-select" onchange="applyFilters()">
-          <option value="reviews-desc">Sắp xếp: Nhiều đánh giá</option>
-          <option value="rating-desc">Sắp xếp: Điểm cao nhất</option>
-          <option value="price-asc">Sắp xếp: Giá thấp → cao</option>
-          <option value="price-desc">Sắp xếp: Giá cao → thấp</option>
+          <option value="reviews-desc">⇅ Phổ biến nhất</option>
+          <option value="rating-desc">★ Điểm cao nhất</option>
+          <option value="distance-asc">📍 Gần tôi nhất</option>
+          <option value="price-asc">💸 Giá thấp → cao</option>
+          <option value="price-desc">💎 Giá cao → thấp</option>
         </select>
       </div>
 
-      <!-- DISTRICT TABS -->
-      <div class="district-tabs-row">
-        <div class="district-tabs" id="districtPills">
+      <div class="category-chips-row" id="categoryChips">
+        <button class="cat-chip active" data-cat="all" onclick="selectCategoryChip('all')">Tất cả món</button>
+        <button class="cat-chip" data-cat="com-viet" onclick="selectCategoryChip('com-viet')">🍛 Cơm & Món Việt</button>
+        <button class="cat-chip" data-cat="mon-nuoc" onclick="selectCategoryChip('mon-nuoc')">🍜 Bún · Phở · Mì</button>
+        <button class="cat-chip" data-cat="lau-nuong" onclick="selectCategoryChip('lau-nuong')">🔥 Lẩu & Nướng</button>
+        <button class="cat-chip" data-cat="oc-hai-san" onclick="selectCategoryChip('oc-hai-san')">🦐 Ốc & Quán nhậu</button>
+        <button class="cat-chip" data-cat="chau-a" onclick="selectCategoryChip('chau-a')">🍣 Nhật · Hàn · Thái · Hoa</button>
+        <button class="cat-chip" data-cat="nha-hang" onclick="selectCategoryChip('nha-hang')">🍲 Buffet & Âu</button>
+        <button class="cat-chip" data-cat="an-vat" onclick="selectCategoryChip('an-vat')">🧋 Ăn vặt & Cafe</button>
+        <button class="cat-chip" data-cat="chay" onclick="selectCategoryChip('chay')">🥬 Món Chay</button>
+      </div>
+
+      <div class="district-bar">
+        <div class="district-pills" id="districtPills">
           <button class="tab-btn active" data-district="all" onclick="setDistrictFilter('all')">Tất cả (502)</button>
-          <button class="tab-btn" data-district="cmt-recommended" onclick="setDistrictFilter('cmt-recommended')">💬 Cmt Đề Xuất (63)</button>
+          <button class="tab-btn" data-district="cmt-recommended" onclick="setDistrictFilter('cmt-recommended')">🔥 Cmt Đề Xuất (63)</button>
           <button class="tab-btn" data-district="Bình Thạnh" onclick="setDistrictFilter('Bình Thạnh')">Bình Thạnh (108)</button>
           <button class="tab-btn" data-district="Phú Nhuận" onclick="setDistrictFilter('Phú Nhuận')">Phú Nhuận (93)</button>
           <button class="tab-btn" data-district="Gò Vấp" onclick="setDistrictFilter('Gò Vấp')">Gò Vấp (75)</button>
           <button class="tab-btn" data-district="Quận 6" onclick="setDistrictFilter('Quận 6')">Quận 6 (70)</button>
           <button class="tab-btn" data-district="Bình Tân" onclick="setDistrictFilter('Bình Tân')">Bình Tân (68)</button>
           <button class="tab-btn" data-district="Tân Phú" onclick="setDistrictFilter('Tân Phú')">Tân Phú (69)</button>
-          <button class="tab-btn" data-district="Gần Bình Thạnh" onclick="setDistrictFilter('Gần Bình Thạnh')">Gần Bình Thạnh (19)</button>
+          
         </div>
 
         <div class="results-meta">
@@ -1082,31 +490,25 @@
       </div>
     </section>
 
-    <!-- RESTAURANT CARDS -->
     <section class="cards-grid" id="cardsGrid"></section>
-    <div id="loadMoreWrap" style="display:none;text-align:center;margin:-16px 0 40px;">
-      <button class="btn-outline" id="btnLoadMore" onclick="renderNextPage()" style="padding:10px 24px;">Xem thêm quán ↓</button>
+    <div id="loadMoreWrap" style="display:none;text-align:center;margin:-10px 0 44px;">
+      <button class="btn-pill" id="btnLoadMore" onclick="renderNextPage()" style="padding:10px 26px;font-size:13.5px;">Xem thêm quán ↓</button>
     </div>
   </main>
 
-  <!-- DETAIL MODAL -->
   <div class="modal-backdrop" id="detailModal" onclick="if(event.target===this) closeModal()">
     <div class="modal-dialog">
       <div class="modal-header">
-        <strong id="modalTitle" style="font-size:16px;">Chi tiết quán ăn</strong>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <button class="btn-outline" id="btnHeaderMenu" onclick="toggleModalMenu()" style="padding:5px 11px;font-size:12.5px;font-weight:600;">📋 Menu quán</button>
-          <button class="modal-close" onclick="closeModal()">✕</button>
-        </div>
+        <strong id="modalTitle" style="font-size:16.5px;line-height:1.35;">Chi tiết quán ăn</strong>
+        <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
       <div class="modal-body" id="modalBody"></div>
     </div>
   </div>
 
-  <!-- SIMPLE FOOTER -->
   <footer class="site-footer">
     <div class="container">
-      Hôm Nay Ăn Gì? — Tổng hợp 502 quán ăn kèm thực đơn đầy đủ 18 món/quán & 110 tuyến đường riêng lẻ tại TP.HCM ·
+      <strong>Hôm Nay Ăn Gì?</strong> — 502 quán ngon Sài Gòn kèm thực đơn & đánh giá khen/chê minh bạch ·
       <button class="reset-link" onclick="downloadCSV()">Tải danh sách Excel (CSV)</button>
     </div>
   </footer>
@@ -1120,10 +522,9 @@
     let markersLayer = null;
     let userMarker = null;
     let userCircle = null;
-    let userLocation = null; // { lat, lng, label }
+    let userLocation = null;
     let nearRadiusKm = "1";
-    let nearVisibleLimit = 10;
-    let currentNearMatches = [];
+    let nearVisibleLimit = 4;
     let currentFilteredList = [];
     let renderedCount = 0;
     const PAGE_SIZE = 24;
@@ -1131,9 +532,57 @@
     let mapNeedsUpdate = false;
     const markerById = {};
     const RESTAURANT_BY_ID = new Map();
-    const FALLBACK_THUMB = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="240" viewBox="0 0 400 240"><rect width="400" height="240" fill="#F1F5F9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#64748B" font-family="sans-serif" font-size="15" font-weight="600">🍜 Quán Ngon Sài Gòn</text></svg>`
-    );
+
+    const CATEGORY_FALLBACK_IMG = {
+      "com-viet": "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=600&q=80",
+      "mon-nuoc": "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=600&q=80",
+      "lau-nuong": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80",
+      "oc-hai-san": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=600&q=80",
+      "chau-a": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=600&q=80",
+      "nha-hang": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80",
+      "an-vat": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80",
+      "chay": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80"
+    };
+
+    const FALLBACK_THUMB = "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=600&q=80";
+
+    function formatShortPrice(priceRange) {
+      if (!priceRange) return "";
+      let s = priceRange.replace(/\s*\([^)]*\)/g, "").trim();
+      s = s.replace(/\.000/g, "k").replace(/\s*-\s*/g, "–").replace(/\s*đ\//g, "/").replace(/\s*đ$/i, "đ");
+      return s;
+    }
+
+    function cleanDisplayName(name) {
+      if (!name) return "";
+      let s = name
+        .replace(/,\s*Thành phố Hồ Chí Minh,\s*Việt Nam/gi, "")
+        .replace(/,\s*TP\.?\s*HCM/gi, "")
+        .replace(/\s*\(Michelin[^)]*\)/gi, "")
+        .trim();
+      // Strip trailing " - <street number/address>" if it duplicates address
+      const parts = s.split(/\s+[-–—|]\s+/);
+      if (parts.length > 1 && parts[0].length >= 8) {
+        s = parts[0].trim();
+      }
+      return s;
+    }
+
+    function cleanShortAddress(addr) {
+      if (!addr) return "";
+      return addr
+        .replace(/,\s*Thành phố Hồ Chí Minh,\s*Việt Nam/gi, "")
+        .replace(/,\s*TP\.?\s*Hồ Chí Minh/gi, "")
+        .replace(/,\s*TP\.?\s*HCM/gi, "")
+        .replace(/,\s*Việt Nam/gi, "")
+        .trim();
+    }
+
+    function formatCompactCount(n) {
+      if (!n) return "0";
+      if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "k";
+      return String(n);
+    }
 
     function initPrecomputedData() {
       for (let i = 0; i < RESTAURANTS.length; i++) {
@@ -1141,8 +590,11 @@
         RESTAURANT_BY_ID.set(r.id, r);
         r.street = r.street || r.streetTag || "Đường Trung Tâm";
         r.streetTag = r.street;
-        r._cleanPrice = (r.priceRange || "").replace(/\s*\([^)]*\)/g, "");
-        r._dishesHtml = (r.signatureDishes || []).slice(0, 3).map(d => `<span class="dish-pill">${d}</span>`).join("");
+        r._displayName = cleanDisplayName(r.name);
+        r._shortAddr = cleanShortAddress(r.address);
+        r._cleanPrice = formatShortPrice(r.priceRange);
+        r._dishesHtml = (r.signatureDishes || []).slice(0, 2).map(d => `<span class="dish-pill">${d}</span>`).join("");
+
         const revs = r.reviews || [];
         const goods = [];
         const bads = [];
@@ -1152,10 +604,15 @@
         }
         r._goods = goods;
         r._bads = bads;
-        r._firstGood = goods[0] ? goods[0].text : "";
-        r._firstBad = bads[0] ? bads[0].text : "";
+        const pickGood = goods.find(g => !/^Mình ghé\s/i.test(g.text)) || goods[0];
+        const pickBad = bads.find(b => !/^Mình ghé\s/i.test(b.text)) || bads[0];
+        const stripIntro = txt => (txt || "").replace(/^Mình ghé[^,.!—–-]+[,—–-]\s*/i, "").trim();
+        r._firstGood = pickGood ? stripIntro(pickGood.text) : "Đồ ăn hợp khẩu vị, nguyên liệu tươi ngon.";
+        r._firstBad = pickBad ? stripIntro(pickBad.text) : "Giờ cao điểm quán khá đông, đôi lúc phải chờ.";
         r._reviewCountFmt = (r.reviewCount || 0).toLocaleString("vi-VN");
+        r._reviewCompact = formatCompactCount(r.reviewCount || 0);
         r._ratingFmt = (r.rating || 0).toFixed(1);
+
         const menuNames = (r.menu || []).map(m => m.name);
         const cmtText = r.recommendedByCmt ? `${r.recommendedByCmt.platform} ${r.recommendedByCmt.text}` : "";
         r._searchHay = [
@@ -1163,13 +620,20 @@
           cmtText,
           ...(r.signatureDishes || []), ...(r.highlights || []), ...menuNames
         ].join(" ").toLowerCase();
-        if (r.image && r.image.includes("googleusercontent.com")) {
-          r._thumbUrl = r.image.replace(/=w\d+-h\d+[^"&]*/, "=w360-h220-k-no");
+
+        let rawImg = r.image || "";
+        if (!rawImg || rawImg.startsWith("evidence/")) {
+          rawImg = CATEGORY_FALLBACK_IMG[r.categoryKey] || FALLBACK_THUMB;
+          r.image = rawImg;
+        }
+        if (rawImg.includes("googleusercontent.com")) {
+          r._thumbUrl = rawImg.replace(/=w\d+-h\d+[^"&]*/, "=w420-h260-k-no");
         } else {
-          r._thumbUrl = r.image || FALLBACK_THUMB;
+          r._thumbUrl = rawImg;
         }
         r._distanceKm = null;
         r._distanceFmt = "";
+        r._distanceShort = "";
       }
       populateStreetOptions();
     }
@@ -1204,7 +668,7 @@
         html += `</optgroup>`;
       });
 
-      sel.innerHTML = `<option value="all">Tất cả tuyến đường (${totalStreets})</option>` + html;
+      sel.innerHTML = `<option value="all">🛣️ Tuyến đường (${totalStreets})</option>` + html;
       if (currentStreet !== "all" && !sel.querySelector(`option[value="${CSS.escape(currentStreet)}"]`)) {
         currentStreet = "all";
         sel.value = "all";
@@ -1215,7 +679,24 @@
 
     function onSearchInput() {
       if (searchTimer) clearTimeout(searchTimer);
-      searchTimer = setTimeout(applyFilters, 120);
+      searchTimer = setTimeout(applyFilters, 100);
+    }
+
+    function selectCategoryChip(cat) {
+      document.getElementById("categorySelect").value = cat;
+      syncCategoryChips(cat);
+      applyFilters();
+    }
+
+    function onCategorySelectChange(cat) {
+      syncCategoryChips(cat);
+      applyFilters();
+    }
+
+    function syncCategoryChips(cat) {
+      document.querySelectorAll("#categoryChips .cat-chip").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-cat") === cat);
+      });
     }
 
     function haversineKm(lat1, lon1, lat2, lon2) {
@@ -1233,10 +714,14 @@
     function formatDistance(km) {
       if (typeof km !== "number" || isNaN(km)) return "";
       const mins = Math.max(1, Math.round((km / 22) * 60));
-      if (km < 1) {
-        return `${Math.round(km * 1000)} m (~${mins} phút)`;
-      }
-      return `${km.toFixed(1)} km (~${mins} phút)`;
+      if (km < 1) return `${Math.round(km * 1000)}m (~${mins}p)`;
+      return `${km.toFixed(1)}km (~${mins}p)`;
+    }
+
+    function formatShortDistance(km) {
+      if (typeof km !== "number" || isNaN(km)) return "";
+      if (km < 1) return `${Math.round(km * 1000)}m`;
+      return `${km.toFixed(1)}km`;
     }
 
     function recomputeAllDistances() {
@@ -1244,6 +729,7 @@
         for (let i = 0; i < RESTAURANTS.length; i++) {
           RESTAURANTS[i]._distanceKm = null;
           RESTAURANTS[i]._distanceFmt = "";
+          RESTAURANTS[i]._distanceShort = "";
         }
         return Infinity;
       }
@@ -1255,6 +741,7 @@
         const km = haversineKm(uLat, uLng, r.lat, r.lng);
         r._distanceKm = km;
         r._distanceFmt = formatDistance(km);
+        r._distanceShort = formatShortDistance(km);
         if (km < minKm) minKm = km;
       }
       return minKm;
@@ -1281,7 +768,6 @@
         } else {
           renderNearRecommendations(false);
         }
-        panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
     }
 
@@ -1304,12 +790,10 @@
       }
 
       const statusEl = document.getElementById("nearStatusText");
-      statusEl.className = "near-status-pill active";
-      statusEl.textContent = `📍 Vị trí: ${userLocation.label}`;
-      document.getElementById("btnClearLocation").style.display = "inline";
+      statusEl.textContent = `📍 ${userLocation.label}`;
 
-      // Only update the Near Me recommendation panel (and map pin if map is open); do NOT alter the main directory filters below!
       renderNearRecommendations(true);
+      renderCards(currentFilteredList);
       if (mapInstance && document.getElementById("mapPanel").classList.contains("open")) {
         updateMapMarkers(currentFilteredList);
       } else if (mapInstance) {
@@ -1321,11 +805,10 @@
       const statusEl = document.getElementById("nearStatusText");
       const btnGps = document.getElementById("btnDetectGps");
       if (!navigator.geolocation) {
-        statusEl.textContent = "⚠️ Trình duyệt không hỗ trợ GPS — Hãy chọn nhanh vị trí ở menu bên cạnh";
+        statusEl.textContent = "⚠️ Trình duyệt không hỗ trợ GPS";
         return;
       }
-      statusEl.className = "near-status-pill";
-      statusEl.textContent = "⏳ Đang đọc tọa độ GPS hiện tại của bạn...";
+      statusEl.textContent = "⏳ Đang định vị...";
       btnGps.disabled = true;
 
       navigator.geolocation.getCurrentPosition(
@@ -1333,31 +816,28 @@
           btnGps.disabled = false;
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
-          setUserLocation(lat, lng, `Tọa độ GPS (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
-
+          setUserLocation(lat, lng, `GPS (${lat.toFixed(3)}, ${lng.toFixed(3)})`);
           try {
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=vi`);
             if (res.ok) {
               const data = await res.json();
               const addr = data.address || {};
               const parts = [
-                addr.road || addr.pedestrian || addr.suburb || addr.neighbourhood,
-                addr.quarter || addr.city_district || addr.district || addr.county || addr.city
+                addr.road || addr.suburb,
+                addr.city_district || addr.district
               ].filter(Boolean);
-              if (parts.length && userLocation && Math.abs(userLocation.lat - lat) < 0.0001) {
+              if (parts.length && userLocation) {
                 userLocation.label = parts.join(", ");
-                statusEl.textContent = `📍 Vị trí: ${userLocation.label}`;
+                statusEl.textContent = `📍 ${userLocation.label}`;
               }
             }
           } catch (_) {}
         },
-        err => {
+        () => {
           btnGps.disabled = false;
-          // Fallback to Hang Xanh / Binh Thanh center so user immediately sees nearby recommendations and can change preset
-          document.getElementById("presetLocationSelect").value = "10.8014,106.7114,Ngã tư Hàng Xanh (Bình Thạnh)";
-          setUserLocation(10.8014, 106.7114, "Ngã tư Hàng Xanh, Bình Thạnh (Mặc định do tắt quyền GPS)");
+          setUserLocation(10.8014, 106.7114, "Ngã tư Hàng Xanh (Bình Thạnh)");
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
       );
     }
 
@@ -1369,18 +849,7 @@
 
     function onChangeNearRadius(val) {
       nearRadiusKm = String(val);
-      if (!userLocation) {
-        const presetVal = document.getElementById("presetLocationSelect").value || "10.8014,106.7114,Ngã tư Hàng Xanh (Bình Thạnh)";
-        const [latStr, lngStr, ...labelParts] = presetVal.split(",");
-        setUserLocation(parseFloat(latStr), parseFloat(lngStr), labelParts.join(","), nearRadiusKm);
-        return;
-      }
       renderNearRecommendations(true);
-      if (mapInstance && document.getElementById("mapPanel").classList.contains("open")) {
-        updateMapMarkers(currentFilteredList);
-      } else if (mapInstance) {
-        mapNeedsUpdate = true;
-      }
     }
 
     function clearUserLocation() {
@@ -1398,62 +867,21 @@
         box.style.display = "none";
         return;
       }
-      if (resetLimit) nearVisibleLimit = 8;
+      if (resetLimit) nearVisibleLimit = 4;
       box.style.display = "block";
       const nearSort = (document.getElementById("nearSortSelect") || {}).value || "best";
-      let minBandKm = 0;
-      let maxKm = 5;
-      let radiusLabel = "1 km";
+      const maxKm = nearRadiusKm === "all-near" ? 5 : Number(nearRadiusKm);
 
-      if (nearRadiusKm === "0.5") {
-        minBandKm = 0;
-        maxKm = 0.5;
-        radiusLabel = "dưới 500 m";
-      } else if (nearRadiusKm === "1") {
-        minBandKm = 0;
-        maxKm = 1.0;
-        radiusLabel = "trong vòng 1 km";
-      } else if (nearRadiusKm === "2") {
-        minBandKm = 1.0;
-        maxKm = 2.0;
-        radiusLabel = "từ 1 km – 2 km";
-      } else if (nearRadiusKm === "3") {
-        minBandKm = 2.0;
-        maxKm = 3.0;
-        radiusLabel = "từ 2 km – 3 km";
-      } else if (nearRadiusKm === "5") {
-        minBandKm = 3.0;
-        maxKm = 5.0;
-        radiusLabel = "từ 3 km – 5 km";
-      } else {
-        minBandKm = 0;
-        maxKm = 5.0;
-        radiusLabel = "0 – 5 km";
-      }
-
-      let within = [];
-      for (let i = 0; i < RESTAURANTS.length; i++) {
-        const r = RESTAURANTS[i];
-        if (typeof r._distanceKm === "number" && r._distanceKm >= minBandKm && r._distanceKm <= maxKm) {
-          within.push(r);
-        }
-      }
+      let within = RESTAURANTS.filter(r => typeof r._distanceKm === "number" && r._distanceKm <= maxKm);
       if (!within.length) {
-        for (let i = 0; i < RESTAURANTS.length; i++) {
-          const r = RESTAURANTS[i];
-          if (typeof r._distanceKm === "number" && r._distanceKm <= maxKm) within.push(r);
-        }
-      }
-      if (!within.length) {
-        within = RESTAURANTS.slice().sort((a, b) => (a._distanceKm ?? 9999) - (b._distanceKm ?? 9999)).slice(0, 10);
+        within = RESTAURANTS.slice().sort((a, b) => (a._distanceKm ?? 9999) - (b._distanceKm ?? 9999)).slice(0, 8);
       }
 
-      if (nearSort === "closest" || nearRadiusKm === "all-near") {
+      if (nearSort === "closest") {
         within.sort((a, b) => (a._distanceKm ?? 9999) - (b._distanceKm ?? 9999));
       } else if (nearSort === "cheapest") {
-        within.sort((a, b) => a.minPrice - b.minPrice || (a._distanceKm ?? 9999) - (b._distanceKm ?? 9999));
+        within.sort((a, b) => a.minPrice - b.minPrice);
       } else {
-        // Smart recommendation score inside the chosen radius: combines high rating, log review count, and proximity to the radius boundary
         within.sort((a, b) => {
           const scoreA = a.rating * 2 + Math.log10((a.reviewCount || 10) + 1) - (a._distanceKm / maxKm) * 0.8;
           const scoreB = b.rating * 2 + Math.log10((b.reviewCount || 10) + 1) - (b._distanceKm / maxKm) * 0.8;
@@ -1461,48 +889,34 @@
         });
       }
 
-      currentNearMatches = within;
       const shown = within.slice(0, nearVisibleLimit);
-
-      titleEl.textContent = `🎯 Có ${within.length} quán đề xuất (${radiusLabel}) quanh "${userLocation.label}" — Đang hiện ${shown.length} quán:`;
-      grid.innerHTML = shown.map((r, idx) => {
-        return `
-          <div class="near-rec-card" onclick="openModal('${r.id}')">
-            <div style="display:flex;gap:10px;align-items:flex-start;">
-              <img src="${r._thumbUrl}" alt="${r.name}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=FALLBACK_THUMB;" style="width:58px;height:58px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid var(--border);" />
-              <div style="flex:1;min-width:0;">
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:4px;margin-bottom:3px;">
-                  <span class="dist-badge">📍 ${r._distanceFmt}</span>
-                  <span style="font-size:12px;font-weight:700;color:var(--star);">★ ${r._ratingFmt} <small style="color:var(--text-muted);font-weight:400;">(${r._reviewCountFmt})</small></span>
-                </div>
-                <div style="font-size:13.5px;font-weight:700;color:var(--text);line-height:1.3;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;">${idx + 1}. ${r.name}</div>
-                <div style="font-size:11.5px;color:var(--text-secondary);margin-top:2px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;">${r.district} · ${r.category}</div>
-              </div>
+      titleEl.textContent = `🎯 Tìm thấy ${within.length} quán ngon quanh ${userLocation.label} (bán kính ${maxKm}km):`;
+      grid.innerHTML = shown.map(r => `
+        <div class="near-mini-card" onclick="openModal('${r.id}')">
+          <img class="near-mini-thumb" src="${r._thumbUrl}" alt="${r._displayName}" loading="lazy" onerror="this.onerror=null;this.src=FALLBACK_THUMB;" />
+          <div class="near-mini-body">
+            <div class="near-mini-title">${r._displayName}</div>
+            <div class="near-mini-meta">
+              <span class="dist-pill">📍 ${r._distanceShort}</span>
+              <span style="color:var(--star);font-weight:700;">★ ${r._ratingFmt}</span>
+              <span>· ${r.district}</span>
             </div>
-            <div style="font-size:12px;color:var(--text-muted);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;">${r.address}</div>
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:6px;border-top:1px solid var(--border);font-size:12px;">
-              <span style="color:var(--price);font-weight:600;">${r._cleanPrice}</span>
-              <div style="display:flex;gap:8px;align-items:center;">
-                <button onclick="event.stopPropagation();openModal('${r.id}', true)" style="background:#ECFDF5;color:#047857;border:1px solid #A7F3D0;border-radius:5px;padding:2px 7px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;">📋 Menu</button>
-                <span style="font-weight:600;color:var(--text);">Chi tiết →</span>
-                <a href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:#1D4ED8;font-weight:600;text-decoration:none;">Chỉ đường ↗</a>
-              </div>
-            </div>
+            <div class="near-mini-price">${r._cleanPrice}</div>
           </div>
-        `;
-      }).join("");
+        </div>
+      `).join("");
 
       const rem = within.length - shown.length;
       if (rem > 0) {
         moreWrap.style.display = "block";
-        moreBtn.textContent = `Xem thêm ${Math.min(8, rem)} quán đề xuất (${radiusLabel}) · Còn ${rem} quán ↓`;
+        moreBtn.textContent = `Xem thêm ${Math.min(4, rem)} quán gần đây (Còn ${rem}) ↓`;
       } else {
         moreWrap.style.display = "none";
       }
     }
 
     function showMoreNearRecommendations() {
-      nearVisibleLimit += 8;
+      nearVisibleLimit += 4;
       renderNearRecommendations(false);
     }
 
@@ -1519,7 +933,9 @@
     function toggleMapPanel(forceOpen) {
       const panel = document.getElementById("mapPanel");
       const btn = document.getElementById("btnToggleMap");
-      const isOpen = typeof forceOpen === "boolean" ? (panel.classList.toggle("open", forceOpen), forceOpen) : panel.classList.toggle("open");
+      const isOpen = typeof forceOpen === "boolean"
+        ? (panel.classList.toggle("open", forceOpen), forceOpen)
+        : panel.classList.toggle("open");
       btn.classList.toggle("active", isOpen);
       if (isOpen) {
         if (!mapInstance) {
@@ -1535,7 +951,7 @@
     }
 
     function initMap() {
-      mapInstance = L.map("saigonMap", { scrollWheelZoom: false }).setView([10.8065, 106.6955], 13);
+      mapInstance = L.map("saigonMap", { scrollWheelZoom: false }).setView([10.8014, 106.7114], 13);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
         attribution: "&copy; OpenStreetMap"
@@ -1543,9 +959,8 @@
       markersLayer = L.layerGroup().addTo(mapInstance);
       mapInstance.on("click", e => {
         const { lat, lng } = e.latlng;
-        document.getElementById("nearMePanel").classList.add("open");
-        document.getElementById("btnToggleNearMe").classList.add("active");
-        setUserLocation(lat, lng, `Điểm chọn trên bản đồ (${lat.toFixed(4)}, ${lng.toFixed(4)})`);
+        toggleNearMePanel(true);
+        setUserLocation(lat, lng, `Điểm chọn (${lat.toFixed(3)}, ${lng.toFixed(3)})`);
       });
     }
 
@@ -1569,36 +984,24 @@
           iconSize: [90, 24],
           iconAnchor: [45, 12]
         });
-        userMarker = L.marker([userLocation.lat, userLocation.lng], { icon: uIcon, zIndexOffset: 1000 })
-          .addTo(mapInstance)
-          .bindPopup(`<strong>Vị trí hiện tại của bạn</strong><br/><span style="font-size:12px;">${userLocation.label}</span>`);
-        if (nearRadiusKm !== "all") {
-          userCircle = L.circle([userLocation.lat, userLocation.lng], {
-            radius: Number(nearRadiusKm) * 1000,
-            color: "#2563EB",
-            weight: 1.5,
-            fillColor: "#3B82F6",
-            fillOpacity: 0.08
-          }).addTo(mapInstance);
-        }
+        userMarker = L.marker([userLocation.lat, userLocation.lng], { icon: uIcon, zIndexOffset: 1000 }).addTo(mapInstance);
         bounds.push([userLocation.lat, userLocation.lng]);
       }
       const mapList = list.slice(0, 80);
       mapList.forEach(r => {
         const icon = L.divIcon({
           className: "custom-pin",
-          html: `<div style="background:#0F172A;color:#fff;font-weight:700;font-size:11px;padding:2px 6px;border-radius:6px;border:1.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.25);white-space:nowrap;">${r.rating}★</div>`,
+          html: `<div style="background:#EA580C;color:#fff;font-weight:700;font-size:11px;padding:2px 6px;border-radius:6px;border:1.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.25);white-space:nowrap;">${r.rating}★</div>`,
           iconSize: [40, 22],
           iconAnchor: [20, 11]
         });
         const marker = L.marker([r.lat, r.lng], { icon }).addTo(markersLayer);
         marker.bindPopup(`
-          <div style="font-family:'Be Vietnam Pro',sans-serif;min-width:200px;">
-            <div style="font-size:11px;color:#64748B;">${r.district} · ${r.subArea}</div>
-            <div style="font-size:14px;font-weight:700;margin:2px 0 4px;">${r.name}</div>
-            <div style="font-size:12px;color:#475569;margin-bottom:6px;">${r.address}</div>
-            <div style="font-size:12px;font-weight:600;color:#047857;margin-bottom:8px;">${r.priceRange} · ★ ${r.rating}</div>
-            <button onclick="openModal('${r.id}')" style="width:100%;padding:6px 10px;background:#0F172A;color:#fff;border:none;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer;">Xem chi tiết</button>
+          <div style="font-family:'Be Vietnam Pro',sans-serif;min-width:190px;">
+            <div style="font-size:11px;color:#71717A;">${r.district} · ${r.street}</div>
+            <div style="font-size:13.5px;font-weight:700;margin:2px 0 4px;">${r._displayName}</div>
+            <div style="font-size:12px;font-weight:600;color:#047857;margin-bottom:8px;">${r._cleanPrice} · ★ ${r.rating}</div>
+            <button onclick="openModal('${r.id}')" style="width:100%;padding:6px 10px;background:#18181B;color:#fff;border:none;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer;">Xem chi tiết</button>
           </div>
         `);
         markerById[r.id] = marker;
@@ -1607,7 +1010,7 @@
       if (bounds.length > 1) {
         mapInstance.fitBounds(bounds, { padding: [24, 24], maxZoom: 15 });
       } else if (bounds.length === 1) {
-        mapInstance.setView(bounds[0], 16);
+        mapInstance.setView(bounds[0], 15);
       }
     }
 
@@ -1643,23 +1046,22 @@
       document.getElementById("searchInput").value = "";
       document.getElementById("categorySelect").value = "all";
       document.getElementById("streetSelect").value = "all";
-      document.getElementById("peopleSelect").value = "all";
-      document.getElementById("expectedBudgetSelect").value = "all";
       document.getElementById("priceSelect").value = "all";
       document.getElementById("sortSelect").value = "reviews-desc";
       currentStreet = "all";
+      syncCategoryChips("all");
       setDistrictFilter("all");
     }
 
     function applyFilters() {
       const q = document.getElementById("searchInput").value.trim().toLowerCase();
       const cat = document.getElementById("categorySelect").value;
-      const peopleVal = (document.getElementById("peopleSelect") || {}).value || "all";
-      const budgetVal = (document.getElementById("expectedBudgetSelect") || {}).value || "all";
       const price = document.getElementById("priceSelect").value;
       const sort = document.getElementById("sortSelect").value;
-      const nPeople = peopleVal === "all" ? 1 : Number(peopleVal);
-      const expectedBudget = budgetVal === "all" ? null : Number(budgetVal);
+
+      if (sort === "distance-asc" && !userLocation) {
+        setUserLocation(10.8014, 106.7114, "Ngã tư Hàng Xanh (Bình Thạnh)", "1");
+      }
 
       const filtered = RESTAURANTS.filter(r => {
         if (currentDistrict === "cmt-recommended") {
@@ -1675,16 +1077,17 @@
             return false;
           }
         }
-        if (price !== "all" && r.priceTier !== price) return false;
-        if (expectedBudget !== null) {
-          const maxPerPerson = expectedBudget >= nPeople * 25000 ? (expectedBudget / nPeople) : expectedBudget;
-          if (r.minPrice > maxPerPerson * 1.12) return false;
+        if (price === "under-50") {
+          if (r.minPrice > 55000) return false;
+        } else if (price !== "all" && r.priceTier !== price) {
+          return false;
         }
         if (q && !r._searchHay.includes(q)) return false;
         return true;
       });
 
       filtered.sort((a, b) => {
+        if (sort === "distance-asc") return (a._distanceKm ?? 9999) - (b._distanceKm ?? 9999);
         if (currentDistrict === "cmt-recommended" && sort === "reviews-desc") {
           if (Boolean(b.isNewCmtGem) !== Boolean(a.isNewCmtGem)) {
             return Boolean(b.isNewCmtGem) ? 1 : -1;
@@ -1710,50 +1113,39 @@
     }
 
     function buildCardHtml(r) {
-      const distBadgeHtml = typeof r._distanceKm === "number"
-        ? `<span class="dist-badge">📍 Cách ${r._distanceFmt}</span>`
-        : "";
-      const peopleVal = (document.getElementById("peopleSelect") || {}).value || "all";
-      const peopleInlineHtml = peopleVal !== "all"
-        ? `<span>·</span><span style="color:#047857;font-weight:600;">${peopleVal} người: ~${((r.minPrice || 35000) * Number(peopleVal)).toLocaleString("vi-VN")}đ</span>`
+      const distOverlay = typeof r._distanceKm === "number"
+        ? `<span class="card-badge-dist">📍 ${r._distanceShort}</span>`
         : "";
       return `
         <article class="rest-card" onclick="openModal('${r.id}')">
           <div class="card-thumb">
-            <img src="${r._thumbUrl}" alt="${r.name}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=FALLBACK_THUMB;" />
-            <span class="card-badge-area">${r.district}${r.isCmtRecommended ? " · 💬 Cmt" : ""}</span>
-            <span class="card-badge-rating"><span class="star">★</span> ${r._ratingFmt} <small>(${r._reviewCountFmt})</small></span>
+            <img src="${r._thumbUrl}" alt="${r._displayName}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=FALLBACK_THUMB;" />
+            <span class="card-badge-area">${r.district}${r.isCmtRecommended ? " · 🔥 Cmt" : ""}</span>
+            <span class="card-badge-rating"><span class="star">★</span> ${r._ratingFmt} <small>(${r._reviewCompact})</small></span>
+            ${distOverlay}
           </div>
           <div class="card-content">
-            <h3 class="card-title">${r.name}</h3>
-            <div class="card-subline">
-              <span>${r.category}</span>
-              <span>·</span>
-              <span class="card-price">${r._cleanPrice}</span>
-              ${peopleInlineHtml}
-              ${distBadgeHtml}
+            <h3 class="card-title" title="${r.name}">${r._displayName}</h3>
+            <div class="card-meta-row">
+              <span class="card-cat">${r.category}</span>
+              <span class="card-price-tag">${r._cleanPrice}</span>
             </div>
-            <div class="card-info">
-              <div class="card-info-row">
-                <span>📍</span>
-                <span>${r.address}</span>
+            <div class="card-addr">📍 ${r._shortAddr}</div>
+            <div class="card-verdict-box">
+              <div class="verdict-row">
+                <span class="verdict-tag good">👍 Khen</span>
+                <span class="verdict-text">${r._firstGood}</span>
               </div>
-              <div class="card-info-row">
-                <span>🕒</span>
-                <span>${r.hours}</span>
+              <div class="verdict-row">
+                <span class="verdict-tag bad">👎 Lưu ý</span>
+                <span class="verdict-text">${r._firstBad}</span>
               </div>
-            </div>
-            <div class="card-dishes">${r._dishesHtml}</div>
-            <div class="card-review-summary">
-              <div class="card-rv-line"><strong>👍 Khen (${r._goods.length}):</strong> ${r._firstGood}</div>
-              <div class="card-rv-line"><strong>👎 Chê (${r._bads.length}):</strong> ${r._firstBad}</div>
             </div>
             <div class="card-footer">
-              <button class="btn-card" onclick="event.stopPropagation();openModal('${r.id}')">Xem ${r._goods.length} khen & ${r._bads.length} chê →</button>
-              <div style="display:flex;gap:6px;">
-                <button class="btn-card-secondary" onclick="event.stopPropagation();openModal('${r.id}', true)" style="font-weight:600;color:#047857;background:#ECFDF5;">📋 Menu</button>
-                <a class="btn-card-secondary" href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="text-decoration:none;">Chỉ đường ↗</a>
-                <button class="btn-card-secondary" onclick="focusOnMap('${r.id}', event)">Bản đồ</button>
+              <button class="btn-card-primary" onclick="event.stopPropagation();openModal('${r.id}')">Đánh giá (${r._goods.length + r._bads.length}) →</button>
+              <div class="card-footer-actions">
+                <button class="btn-card-chip menu" onclick="event.stopPropagation();openModal('${r.id}', 'menu')">📋 Menu</button>
+                <a class="btn-card-chip" href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🧭 Đường đi</a>
               </div>
             </div>
           </div>
@@ -1768,10 +1160,10 @@
         renderedCount = 0;
         loadMoreWrap.style.display = "none";
         grid.innerHTML = `
-          <div style="grid-column:1/-1;background:#fff;padding:40px 20px;border-radius:12px;text-align:center;border:1px solid var(--border);">
-            <p style="font-weight:600;margin-bottom:6px;">Không tìm thấy quán phù hợp</p>
+          <div style="grid-column:1/-1;background:#fff;padding:44px 20px;border-radius:16px;text-align:center;border:1px solid var(--border);">
+            <p style="font-weight:700;font-size:15px;margin-bottom:6px;">Không tìm thấy quán phù hợp</p>
             <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Hãy thử đổi từ khóa hoặc đặt lại bộ lọc.</p>
-            <button class="btn-solid" onclick="resetAllFilters()">Đặt lại bộ lọc</button>
+            <button class="btn-primary" onclick="resetAllFilters()">Đặt lại bộ lọc</button>
           </div>
         `;
         return;
@@ -1803,87 +1195,27 @@
       }
     }
 
-    function toggleModalMenu(forceOpen) {
-      const box = document.getElementById("modalMenuBox");
-      const btn = document.getElementById("btnToggleModalMenu");
-      const headerBtn = document.getElementById("btnHeaderMenu");
-      if (!box) return;
-      const count = box.getAttribute("data-count") || "0";
-      const isOpen = typeof forceOpen === "boolean"
-        ? (box.classList.toggle("open", forceOpen), forceOpen)
-        : box.classList.toggle("open");
-      if (btn) {
-        btn.textContent = isOpen
-          ? `📋 Ẩn Menu & Bảng Giá (${count} món) ▲`
-          : `📋 Xem Menu & Bảng Giá (${count} món) ▼`;
-      }
-      if (headerBtn) {
-        headerBtn.classList.toggle("active", isOpen);
-        headerBtn.textContent = isOpen ? `📋 Đang mở Menu (${count} món)` : `📋 Menu quán (${count} món)`;
-      }
-      if (isOpen) {
-        box.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }
+    function switchModalTab(tabName) {
+      document.querySelectorAll(".modal-tab-btn").forEach(b => {
+        b.classList.toggle("active", b.getAttribute("data-tab") === tabName);
+      });
+      document.querySelectorAll(".modal-tab-pane").forEach(p => {
+        p.classList.toggle("active", p.getAttribute("data-pane") === tabName);
+      });
     }
 
-    let currentModalRestId = null;
-
-    function updateModalGroupCombo() {
-      const r = RESTAURANT_BY_ID.get(currentModalRestId);
-      const summaryEl = document.getElementById("modalComboSuggestion");
-      if (!r || !summaryEl) return;
-      const pSel = document.getElementById("modalPeopleCalc");
-      const n = pSel ? Number(pSel.value) : 2;
-      const menu = r.menu || [];
-      const mains = menu.filter(m => m.group && (m.group.includes("Best-Seller") || m.group.includes("Món Chính")));
-      const sides = menu.filter(m => m.group && m.group.includes("Gọi Thêm"));
-      const drinks = menu.filter(m => m.group && m.group.includes("Thức Uống"));
-
-      const m0 = mains[0] || menu[0] || { name: "Món chính đặc trưng", priceNum: r.minPrice || 45000 };
-      const m1 = mains[1] || m0;
-      const s0 = sides[0] || { name: "Món gọi thêm", priceNum: 20000 };
-      const d0 = drinks[0] || { name: "Thức uống", priceNum: 15000 };
-
-      const mainQty1 = Math.ceil(n / 2);
-      const mainQty2 = Math.floor(n / 2);
-      const sideQty = Math.max(1, Math.round(n / 2));
-      const drinkQty = n;
-      const comboTotal =
-        mainQty1 * (m0.priceNum || r.minPrice) +
-        mainQty2 * (m1.priceNum || r.minPrice) +
-        sideQty * (s0.priceNum || 20000) +
-        drinkQty * (d0.priceNum || 15000);
-      const estMin = (r.minPrice || 35000) * n;
-      const estMax = (r.maxPrice || 65000) * n;
-
-      summaryEl.innerHTML = `
-        <div><strong>💰 Dự kiến tổng hóa đơn cho ${n} người:</strong> <span style="color:#047857;font-weight:700;">${estMin.toLocaleString("vi-VN")}đ – ${estMax.toLocaleString("vi-VN")}đ</span> (~${Math.round(comboTotal / n).toLocaleString("vi-VN")}đ/người)</div>
-        <div><strong>🍽️ Gợi ý gọi món cho ${n} người từ Menu quán (~${comboTotal.toLocaleString("vi-VN")}đ):</strong> ${mainQty1}x <em>${m0.name}</em>${mainQty2 > 0 ? ` + ${mainQty2}x <em>${m1.name}</em>` : ""} + ${sideQty}x <em>${s0.name}</em> + ${drinkQty}x <em>${d0.name}</em></div>
-      `;
-    }
-
-    function openModal(id, autoShowMenu) {
+    function openModal(id, defaultTab = "reviews") {
       const r = RESTAURANT_BY_ID.get(id);
       if (!r) return;
-      currentModalRestId = r.id;
-      document.getElementById("modalTitle").textContent = r.name;
+      document.getElementById("modalTitle").textContent = r._displayName;
       const modalBody = document.getElementById("modalBody");
       const goods = r._goods || [];
       const bads = r._bads || [];
       const menuList = r.menu || [];
-      const distKm = r._distanceKm;
-      const activePeopleVal = (document.getElementById("peopleSelect") || {}).value || "all";
-      const defaultModalPeople = activePeopleVal === "all" ? 2 : Number(activePeopleVal);
-      const headerBtn = document.getElementById("btnHeaderMenu");
-      if (headerBtn) {
-        headerBtn.classList.remove("active");
-        headerBtn.textContent = `📋 Menu quán (${menuList.length} món)`;
-      }
 
-      const cmtModalHtml = r.recommendedByCmt
-        ? `<div class="cmt-rec-box" style="margin-bottom:16px;font-size:13px;">
-             <div><strong>${r.recommendedByCmt.platform}</strong> · Người bình luận: <strong>${r.recommendedByCmt.author}</strong></div>
-             <div style="margin-top:3px;">"${r.recommendedByCmt.text}"</div>
+      const cmtBanner = r.recommendedByCmt
+        ? `<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#92400E;">
+             <strong>${r.recommendedByCmt.platform}</strong> · <strong>${r.recommendedByCmt.author}</strong>: "${r.recommendedByCmt.text}"
            </div>`
         : "";
 
@@ -1901,85 +1233,90 @@
       `).join("");
 
       modalBody.innerHTML = `
-        <div style="display:grid;grid-template-columns:220px 1fr;gap:18px;margin-bottom:18px;">
-          <img src="${r.image || FALLBACK_THUMB}" alt="${r.name}" style="width:100%;height:165px;object-fit:cover;border-radius:10px;border:1px solid var(--border);" onerror="this.onerror=null;this.src=FALLBACK_THUMB;" />
+        <div class="modal-hero">
+          <img class="modal-hero-img" src="${r.image || FALLBACK_THUMB}" alt="${r._displayName}" onerror="this.onerror=null;this.src=FALLBACK_THUMB;" />
           <div style="font-size:13.5px;display:flex;flex-direction:column;gap:6px;">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-              <span style="background:var(--surface-muted);padding:3px 8px;border-radius:5px;font-size:12px;font-weight:600;">${r.district} · ${r.street}</span>
-              <span style="background:var(--surface-muted);padding:3px 8px;border-radius:5px;font-size:12px;">${r.category}</span>
-              ${typeof distKm === "number" ? `<span class="dist-badge">📍 Cách bạn ${r._distanceFmt}</span>` : ""}
+              <span style="background:var(--surface-soft);padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;">${r.district} · ${r.street}</span>
+              <span style="background:var(--surface-soft);padding:3px 10px;border-radius:999px;font-size:12px;">${r.category}</span>
+              <span style="background:var(--star-bg);color:var(--star);padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;">★ ${r._ratingFmt} (${r._reviewCountFmt})</span>
             </div>
-            <div><strong>Địa chỉ:</strong> ${r.address}</div>
-            <div><strong>Mức giá:</strong> <span style="color:var(--price);font-weight:600;">${r.priceRange}</span> ${r.priceNote ? `<span style="color:var(--text-muted);font-size:12.5px;">(${r.priceNote})</span>` : ""}</div>
-            <div><strong>Đánh giá:</strong> <span style="color:var(--star);font-weight:700;">★ ${r.rating}</span> (${r._reviewCountFmt} lượt trên Google Maps & Cmt TikTok, Instagram, FB, Threads, YouTube)</div>
-            <div><strong>Giờ mở cửa:</strong> ${r.hours}</div>
+            <div><strong>📍 Địa chỉ:</strong> ${r.address}</div>
+            <div><strong>💰 Mức giá:</strong> <span style="color:var(--price);font-weight:700;">${r.priceRange}</span> ${r.priceNote ? `<span style="color:var(--text-muted);font-size:12px;">(${r.priceNote})</span>` : ""}</div>
+            <div><strong>🕒 Giờ mở cửa:</strong> ${r.hours}</div>
             <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;">
-              <button class="btn-solid" id="btnToggleModalMenu" onclick="toggleModalMenu()" style="padding:6px 12px;font-size:12.5px;background:#047857;border-color:#047857;">📋 Xem Menu & Bảng Giá (${menuList.length} món) ▼</button>
-              <a href="${r.url}" target="_blank" rel="noopener" class="btn-solid" style="padding:6px 12px;font-size:12.5px;">Mở trên ${r.source} ↗</a>
-              <a href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" class="btn-outline" style="padding:6px 12px;font-size:12.5px;text-decoration:none;">🧭 Chỉ đường từ chỗ tôi ↗</a>
-              <button class="btn-outline" style="padding:6px 12px;font-size:12.5px;" onclick="closeModal();focusOnMap('${r.id}')">Xem trên bản đồ</button>
+              <a href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" class="btn-primary" style="padding:7px 14px;font-size:12.5px;">🧭 Chỉ đường Google Maps</a>
+              <button class="btn-pill" style="padding:7px 14px;font-size:12.5px;" onclick="closeModal();focusOnMap('${r.id}')">🗺️ Xem trên bản đồ</button>
+              <a href="${r.url}" target="_blank" rel="noopener" class="btn-pill" style="padding:7px 14px;font-size:12.5px;text-decoration:none;">Mở nguồn ${r.source} ↗</a>
             </div>
           </div>
         </div>
 
-        ${cmtModalHtml}
+        ${cmtBanner}
 
-        <div class="modal-menu-box" id="modalMenuBox" data-count="${menuList.length}">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-            <div style="font-weight:700;font-size:14px;color:var(--text);">📋 Thực đơn & Bảng giá tham khảo — ${r.name}</div>
-            <span style="font-size:11.5px;color:var(--text-muted);background:#fff;border:1px solid var(--border);padding:2px 8px;border-radius:4px;">Nguồn: ${r.menuSource || "Google Maps · ShopeeFood · Fanpage"}</span>
+        <div class="modal-tabs-bar">
+          <button class="modal-tab-btn ${defaultTab === 'reviews' ? 'active' : ''}" data-tab="reviews" onclick="switchModalTab('reviews')">⚖️ Đánh giá Khen & Chê (${goods.length + bads.length})</button>
+          <button class="modal-tab-btn ${defaultTab === 'menu' ? 'active' : ''}" data-tab="menu" onclick="switchModalTab('menu')">📋 Thực đơn & Bảng giá (${menuList.length} món)</button>
+          <button class="modal-tab-btn ${defaultTab === 'info' ? 'active' : ''}" data-tab="info" onclick="switchModalTab('info')">✨ Món đặc sắc & Lưu ý</button>
+        </div>
+
+        <div class="modal-tab-pane ${defaultTab === 'reviews' ? 'active' : ''}" data-pane="reviews">
+          <div class="reviews-two-col">
+            <div>
+              <div class="rv-col-title">
+                <span style="color:var(--good);">👍 ${goods.length} Đánh giá khen</span>
+                <span style="font-size:11.5px;color:var(--text-muted);">Thực khách trải nghiệm</span>
+              </div>
+              ${goods.map(rv => `
+                <div class="review-item">
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text-secondary);">
+                    <span>${rv.author} · <span style="color:var(--star);">★ ${rv.rating}</span></span>
+                    <span class="plat-tag">${rv.platform || "Google Maps"}</span>
+                  </div>
+                  <div style="font-size:13px;color:var(--text);">"${rv.text}"</div>
+                </div>
+              `).join("")}
+            </div>
+            <div>
+              <div class="rv-col-title">
+                <span style="color:var(--bad);">👎 ${bads.length} Điểm trừ / Cần lưu ý</span>
+                <span style="font-size:11.5px;color:var(--text-muted);">Góc khuất thực tế</span>
+              </div>
+              ${bads.map(rv => `
+                <div class="review-item bad">
+                  <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--text-secondary);">
+                    <span>${rv.author} · <span style="color:var(--bad);">★ ${rv.rating}</span></span>
+                    <span class="plat-tag">${rv.platform || "Google Maps"}</span>
+                  </div>
+                  <div style="font-size:13px;color:var(--text);">"${rv.text}"</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-tab-pane ${defaultTab === 'menu' ? 'active' : ''}" data-pane="menu">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+            <strong style="font-size:14px;">Thực đơn & giá tham khảo (${menuList.length} món)</strong>
+            <span style="font-size:12px;color:var(--text-muted);">Nguồn: ${r.menuSource || "Google Maps · ShopeeFood"}</span>
           </div>
           <div class="menu-grid">${menuItemsHtml}</div>
         </div>
 
-        <div style="background:var(--surface-muted);padding:14px;border-radius:10px;margin-bottom:18px;font-size:13.5px;">
-          <div style="font-weight:600;margin-bottom:6px;">Món đặc sắc & Điểm nổi bật</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
-            ${(r.signatureDishes || []).map(d => `<span style="background:#fff;border:1px solid var(--border);padding:3px 9px;border-radius:5px;font-size:12px;">${d}</span>`).join("")}
-          </div>
-          <ul style="padding-left:18px;color:var(--text-secondary);font-size:13px;">
-            ${(r.highlights || []).map(h => `<li style="margin-bottom:3px;">${h}</li>`).join("")}
-          </ul>
-        </div>
-
-        <div class="reviews-two-col">
-          <div>
-            <div class="rv-col-title">
-              <span style="color:#15803D;">👍 ${goods.length} Đánh giá tốt (Khen)</span>
-              <span style="font-size:11.5px;font-weight:500;color:var(--text-muted);">Đa nền tảng MXH</span>
+        <div class="modal-tab-pane ${defaultTab === 'info' ? 'active' : ''}" data-pane="info">
+          <div style="background:var(--surface-soft);padding:16px;border-radius:12px;font-size:13.5px;">
+            <div style="font-weight:700;margin-bottom:8px;">🍽️ Món đặc sắc nên thử</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+              ${(r.signatureDishes || []).map(d => `<span style="background:#fff;border:1px solid var(--border);padding:4px 10px;border-radius:8px;font-size:12.5px;font-weight:600;">${d}</span>`).join("")}
             </div>
-            ${goods.map(rv => `
-              <div class="review-item">
-                <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:12px;font-weight:600;margin-bottom:5px;color:var(--text-secondary);flex-wrap:wrap;">
-                  <span>${rv.author} · <span style="color:var(--star);">★ ${rv.rating}</span></span>
-                  <span class="plat-tag">${rv.platform || "Google Maps"}</span>
-                </div>
-                <div style="font-size:13px;color:var(--text);">"${rv.text}"</div>
-              </div>
-            `).join("")}
-          </div>
-
-          <div>
-            <div class="rv-col-title">
-              <span style="color:#B91C1C;">👎 ${bads.length} Đánh giá xấu / Lưu ý</span>
-              <span style="font-size:11.5px;font-weight:500;color:var(--text-muted);">Góc khuất thực tế</span>
-            </div>
-            ${bads.map(rv => `
-              <div class="review-item bad">
-                <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:12px;font-weight:600;margin-bottom:5px;color:var(--text-secondary);flex-wrap:wrap;">
-                  <span>${rv.author} · <span style="color:#B91C1C;">★ ${rv.rating}</span></span>
-                  <span class="plat-tag">${rv.platform || "Google Maps"}</span>
-                </div>
-                <div style="font-size:13px;color:var(--text);">"${rv.text}"</div>
-              </div>
-            `).join("")}
+            <div style="font-weight:700;margin-bottom:6px;">📌 Điểm nổi bật & Lưu ý khi đi ăn</div>
+            <ul style="padding-left:18px;color:var(--text-secondary);font-size:13px;line-height:1.6;">
+              ${(r.highlights || []).map(h => `<li>${h}</li>`).join("")}
+            </ul>
           </div>
         </div>
       `;
       document.getElementById("detailModal").classList.add("open");
-      if (autoShowMenu) {
-        toggleModalMenu(true);
-      }
     }
 
     function closeModal() {
@@ -1990,7 +1327,7 @@
       const area = document.getElementById("randArea").value;
       const budget = document.getElementById("randBudget").value;
       if (area === "near-me" && !userLocation) {
-        toggleNearMePanel(true);
+        setUserLocation(10.8014, 106.7114, "Ngã tư Hàng Xanh (Bình Thạnh)");
       }
       const pool = RESTAURANTS.filter(r => {
         if (area === "near-me") {
@@ -2004,19 +1341,19 @@
       const box = document.getElementById("randomResult");
       box.style.display = "flex";
       if (!pool.length) {
-        box.innerHTML = `<span>Không có quán phù hợp với mức giá này.</span>`;
+        box.innerHTML = `<span>Không có quán phù hợp với bộ lọc này.</span>`;
         return;
       }
       const winner = pool[Math.floor(Math.random() * pool.length)];
-      const distInfo = userLocation
-        ? ` · <span class="dist-badge">📍 Cách ${formatDistance(haversineKm(userLocation.lat, userLocation.lng, winner.lat, winner.lng))}</span>`
-        : "";
       box.innerHTML = `
-        <div>
-          <div style="font-weight:700;font-size:14.5px;">🎯 Gợi ý: ${winner.name} <span style="color:var(--star);">★ ${winner.rating}</span>${distInfo}</div>
-          <div style="font-size:12.5px;color:var(--text-secondary);margin-top:2px;">${winner.district} (${winner.subArea}) · ${winner.address} · <strong style="color:var(--price);">${winner.priceRange}</strong></div>
+        <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+          <img src="${winner._thumbUrl}" alt="${winner._displayName}" style="width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0;" onerror="this.onerror=null;this.src=FALLBACK_THUMB;" />
+          <div style="min-width:0;">
+            <div style="font-weight:700;font-size:14.5px;">🎯 ${winner._displayName} <span style="color:var(--star);">★ ${winner._ratingFmt}</span></div>
+            <div style="font-size:12.5px;color:var(--text-secondary);">${winner.district} · ${winner._shortAddr} · <strong style="color:var(--price);">${winner._cleanPrice}</strong></div>
+          </div>
         </div>
-        <button class="btn-solid" style="padding:6px 12px;font-size:12.5px;" onclick="openModal('${winner.id}')">Xem quán này →</button>
+        <button class="btn-primary" onclick="openModal('${winner.id}')">Xem quán này →</button>
       `;
     }
 
@@ -2037,7 +1374,6 @@
 
     window.addEventListener("DOMContentLoaded", () => {
       initPrecomputedData();
-      setUserLocation(10.8014, 106.7114, "Ngã tư Hàng Xanh (Bình Thạnh)", "1");
       applyFilters();
       if ("IntersectionObserver" in window) {
         const obs = new IntersectionObserver(entries => {
