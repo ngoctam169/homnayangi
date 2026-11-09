@@ -584,15 +584,121 @@
       return String(n);
     }
 
+    const ADDRESS_FIXES = {
+      "pg-auto-116": { district: "Bình Tân", lat: 10.7429, lng: 106.6122, address: "Tầng 3 Aeon Mall Bình Tân, 532A Kinh Dương Vương, Phường Bình Trị Đông B, Quận Bình Tân, TP.HCM" },
+      "gm-auto-108": { address: "35 Lý Tự Trọng, Phường Bến Nghé, Quận 1, TP.HCM" },
+      "gm-auto-120": { address: "116/1 Đường Vườn Chuối, Phường 4, Quận 3, TP.HCM" },
+      "gm-auto-121": { address: "123A Võ Thị Sáu, Phường Võ Thị Sáu, Quận 3, TP.HCM" },
+      "gm-auto-122": { address: "122D Cách Mạng Tháng Tám, Phường Võ Thị Sáu, Quận 3, TP.HCM" },
+      "gm-auto-123": { address: "63B Trần Quốc Thảo, Phường Võ Thị Sáu, Quận 3, TP.HCM" },
+      "gm-auto-124": { address: "108/22C Trần Quang Diệu, Phường 14, Quận 3, TP.HCM" },
+      "gm-auto-125": { address: "140A Lý Chính Thắng, Phường Võ Thị Sáu, Quận 3, TP.HCM" },
+      "gm-auto-126": { address: "264B Pasteur, Phường Võ Thị Sáu, Quận 3, TP.HCM" },
+      "gm-auto-130": { address: "10 Lê Ngô Cát, Phường Võ Thị Sáu, Quận 3, TP.HCM" },
+      "gm-new-182": { district: "Phú Nhuận", address: "284/44 Lê Văn Sỹ, Phường 14, Quận 3, TP.HCM" },
+      "gm-new-183": { district: "Bình Thạnh", address: "38 Nguyễn Thượng Hiền, Phường 5, Quận 3, TP.HCM" },
+      "gm-new-184": { district: "Gò Vấp", address: "27 Đường DD11, Phường Tân Hưng Thuận, Quận 12, TP.HCM" },
+      "gm-new-193": { district: "Bình Thạnh", address: "11 Phạm Ngọc Thạch, Phường Võ Thị Sáu, Quận 3, TP.HCM" },
+      "gm-new-197": { district: "Quận 6", address: "285/36/1 Cách Mạng Tháng Tám, Phường 12, Quận 10, TP.HCM" },
+      "gm-new-204": { district: "Phú Nhuận", address: "483 Lê Văn Sỹ, Phường 12, Quận 3, TP.HCM" },
+      "gm-new-206": { district: "Bình Thạnh", address: "50 Nguyễn Huy Tự, Phường Đa Kao, Quận 1, TP.HCM" },
+      "gm-new-207": { district: "Bình Thạnh", address: "84 Nguyễn Văn Lạc, Phường 19, Quận Bình Thạnh, TP.HCM" },
+      "gm-new-208": { district: "Quận 6", address: "455-457 Nguyễn Trãi, Phường 7, Quận 5, TP.HCM" },
+      "gm-new-209": { district: "Bình Thạnh", address: "01 Huỳnh Mẫn Đạt, Phường 19, Quận Bình Thạnh, TP.HCM" },
+      "gm-new-210": { district: "Quận 6", address: "004 Lô A Chung cư Nguyễn Trãi, Phường 8, Quận 5, TP.HCM" },
+      "gm-new-211": { district: "Quận 6", address: "11 Lê Thạch, Phường 12, Quận 4, TP.HCM" },
+      "gm-new-230": { district: "Tân Phú", address: "AEON Mall Tân Phú Celadon, 30 Tân Thắng, Phường Sơn Kỳ, Quận Tân Phú, TP.HCM" },
+      "gm-new-241": { district: "Phú Nhuận", address: "306-308 Lê Văn Sỹ, Phường 1, Quận Tân Bình, TP.HCM" },
+      "gm-new-246": { district: "Phú Nhuận", address: "18 Trường Sơn, Phường 2, Quận Tân Bình, TP.HCM" },
+      "gm-new-248": { district: "Phú Nhuận", address: "2 Huỳnh Lan Khanh, Phường 2, Quận Tân Bình, TP.HCM" },
+      "gm-new-284": { district: "Tân Phú", address: "457 Tân Kỳ Tân Quý, Phường Tân Quý, Quận Tân Phú, TP.HCM" },
+      "gm-new-285": { district: "Tân Phú", address: "668 Tân Kỳ Tân Quý, Phường Bình Hưng Hòa, Quận Bình Tân, TP.HCM" },
+      "gm-new-286": { district: "Tân Phú", address: "Tân Kỳ Tân Quý, Phường Sơn Kỳ, Quận Tân Phú, TP.HCM" },
+      "gm-new-290": { district: "Bình Tân", address: "820 Tân Kỳ Tân Quý, Phường Bình Hưng Hòa, Quận Bình Tân, TP.HCM" },
+      "gm-new-291": { district: "Bình Tân", address: "696 Tân Kỳ Tân Quý, Phường Bình Hưng Hòa, Quận Bình Tân, TP.HCM" },
+      "gm-new-292": { district: "Tân Phú", address: "172A Tân Kỳ Tân Quý, Phường Sơn Kỳ, Quận Tân Phú, TP.HCM" },
+      "gm-new-293": { district: "Bình Tân", address: "702 Tân Kỳ Tân Quý, Phường Bình Hưng Hòa, Quận Bình Tân, TP.HCM" },
+      "gm-new-294": { district: "Bình Tân", address: "906 Tân Kỳ Tân Quý, Phường Bình Hưng Hòa, Quận Bình Tân, TP.HCM" },
+      "gm-new-295": { district: "Tân Phú", address: "582 Tân Kỳ Tân Quý, Phường Sơn Kỳ, Quận Tân Phú, TP.HCM" },
+      "gm-new-296": { district: "Bình Tân", address: "787A Tân Kỳ Tân Quý, Phường Bình Hưng Hòa, Quận Bình Tân, TP.HCM" }
+    };
+
+    function cleanMapAddressString(addr) {
+      if (!addr) return "";
+      let s = addr
+        .replace(/\([^)]*\)/g, "")
+        .replace(/^Đối diện\s+/i, "")
+        .replace(/^[A-Z0-9]{4}\+[A-Z0-9]{2,3},\s*/i, "")
+        .replace(/,\s*Gần Bình Thạnh/gi, "")
+        .replace(/^Số\s+/i, "")
+        .replace(/\s+/g, " ")
+        .replace(/\s*,\s*/g, ", ")
+        .trim();
+      if (!/TP\.?\s*HCM|Hồ Chí Minh/i.test(s)) {
+        s += ", TP. Hồ Chí Minh";
+      }
+      return s;
+    }
+
     function initPrecomputedData() {
+      // First pass: apply address fixes and collect exact street centroids from verified Google Maps places
+      const streetCoordSums = {};
+      for (let i = 0; i < RESTAURANTS.length; i++) {
+        const r = RESTAURANTS[i];
+        const fix = ADDRESS_FIXES[r.id];
+        if (fix) {
+          if (fix.district) r.district = fix.district;
+          if (fix.address) r.address = fix.address;
+          if (fix.lat) r.lat = fix.lat;
+          if (fix.lng) r.lng = fix.lng;
+        }
+        r.street = r.street || r.streetTag || "Đường Trung Tâm";
+        r.streetTag = r.street;
+        const latDecimals = (String(r.lat).split(".")[1] || "").length;
+        if (latDecimals >= 5 && (r.url || "").includes("google.com/maps/place/")) {
+          const key = r.street;
+          if (!streetCoordSums[key]) streetCoordSums[key] = { lat: 0, lng: 0, count: 0 };
+          streetCoordSums[key].lat += Number(r.lat);
+          streetCoordSums[key].lng += Number(r.lng);
+          streetCoordSums[key].count += 1;
+        }
+      }
+
       for (let i = 0; i < RESTAURANTS.length; i++) {
         const r = RESTAURANTS[i];
         RESTAURANT_BY_ID.set(r.id, r);
-        r.street = r.street || r.streetTag || "Đường Trung Tâm";
-        r.streetTag = r.street;
         r._displayName = cleanDisplayName(r.name);
         r._shortAddr = cleanShortAddress(r.address);
         r._cleanPrice = formatShortPrice(r.priceRange);
+        r._cleanMapAddr = cleanMapAddressString(r.address);
+
+        // Extract exact Google Maps Place ID (ChIJ...) if present in r.url
+        const placeMatch = (r.url || "").match(/!19s(ChIJ[A-Za-z0-9_-]+)/);
+        r._placeId = placeMatch ? placeMatch[1] : "";
+        r._hasExactPlaceUrl = Boolean((r.url || "").includes("google.com/maps/place/"));
+
+        // Snap synthetic coordinates to real street centroid if far off
+        const stCentroid = streetCoordSums[r.street];
+        const latDecimals = (String(r.lat).split(".")[1] || "").length;
+        if (stCentroid && stCentroid.count > 0 && latDecimals < 5) {
+          const avgLat = stCentroid.lat / stCentroid.count;
+          const avgLng = stCentroid.lng / stCentroid.count;
+          if (haversineKm(r.lat, r.lng, avgLat, avgLng) > 1.2) {
+            r.lat = Number((avgLat + ((i % 7) - 3) * 0.00035).toFixed(6));
+            r.lng = Number((avgLng + ((i % 5) - 2) * 0.00035).toFixed(6));
+          }
+        }
+
+        // Build authoritative Google Maps search query:
+        // - If it's a verified Google Maps Place or has no street number, include Name + Address
+        // - If it's a street/alley address without a Google Place ID (like cmt-* / extra-*), use exact street address so Google Maps pins the exact house number instead of fuzzy-matching a similar shop name in another district
+        const hasHouseNumber = /\d/.test(r._cleanMapAddr);
+        if (r._placeId || !hasHouseNumber) {
+          r._mapsQuery = `${r._displayName}, ${r._cleanMapAddr}`;
+        } else {
+          r._mapsQuery = r._cleanMapAddr;
+        }
+
         r._dishesHtml = (r.signatureDishes || []).slice(0, 2).map(d => `<span class="dish-pill">${d}</span>`).join("");
 
         const revs = r.reviews || [];
@@ -747,11 +853,19 @@
       return minKm;
     }
 
+    function getGoogleMapsUrl(r) {
+      const q = encodeURIComponent(r._mapsQuery || r._cleanMapAddr || r.address);
+      const placeParam = r._placeId ? `&query_place_id=${r._placeId}` : "";
+      return `https://www.google.com/maps/search/?api=1&query=${q}${placeParam}`;
+    }
+
     function getDirectionsUrl(r) {
-      if (userLocation) {
-        return `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${r.lat},${r.lng}&travelmode=two-wheeler`;
+      const dest = encodeURIComponent(r._mapsQuery || r._cleanMapAddr || r.address);
+      const placeParam = r._placeId ? `&destination_place_id=${r._placeId}` : "";
+      if (userLocation && userLocation.isRealGps) {
+        return `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${dest}${placeParam}&travelmode=two-wheeler`;
       }
-      return `https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lng}&travelmode=two-wheeler`;
+      return `https://www.google.com/maps/dir/?api=1&destination=${dest}${placeParam}&travelmode=two-wheeler`;
     }
 
     function toggleNearMePanel(forceOpen) {
@@ -817,6 +931,7 @@
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
           setUserLocation(lat, lng, `GPS (${lat.toFixed(3)}, ${lng.toFixed(3)})`);
+          if (userLocation) userLocation.isRealGps = true;
           try {
             const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=vi`);
             if (res.ok) {
@@ -1130,7 +1245,7 @@
               <span class="card-cat">${r.category}</span>
               <span class="card-price-tag">${r._cleanPrice}</span>
             </div>
-            <div class="card-addr">📍 ${r._shortAddr}</div>
+            <a class="card-addr" href="${getGoogleMapsUrl(r)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Mở địa chỉ này trên Google Maps" style="display:block;text-decoration:none;">📍 ${r._shortAddr} ↗</a>
             <div class="card-verdict-box">
               <div class="verdict-row">
                 <span class="verdict-tag good">👍 Khen</span>
@@ -1145,7 +1260,8 @@
               <button class="btn-card-primary" onclick="event.stopPropagation();openModal('${r.id}')">Đánh giá (${r._goods.length + r._bads.length}) →</button>
               <div class="card-footer-actions">
                 <button class="btn-card-chip menu" onclick="event.stopPropagation();openModal('${r.id}', 'menu')">📋 Menu</button>
-                <a class="btn-card-chip" href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🧭 Đường đi</a>
+                <a class="btn-card-chip" href="${getGoogleMapsUrl(r)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Xem vị trí quán trên Google Maps">📍 GG Map</a>
+                <a class="btn-card-chip" href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Chỉ đường tới địa chỉ quán">🧭 Đường đi</a>
               </div>
             </div>
           </div>
@@ -1245,9 +1361,9 @@
             <div><strong>💰 Mức giá:</strong> <span style="color:var(--price);font-weight:700;">${r.priceRange}</span> ${r.priceNote ? `<span style="color:var(--text-muted);font-size:12px;">(${r.priceNote})</span>` : ""}</div>
             <div><strong>🕒 Giờ mở cửa:</strong> ${r.hours}</div>
             <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;">
-              <a href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" class="btn-primary" style="padding:7px 14px;font-size:12.5px;">🧭 Chỉ đường Google Maps</a>
-              <button class="btn-pill" style="padding:7px 14px;font-size:12.5px;" onclick="closeModal();focusOnMap('${r.id}')">🗺️ Xem trên bản đồ</button>
-              <a href="${r.url}" target="_blank" rel="noopener" class="btn-pill" style="padding:7px 14px;font-size:12.5px;text-decoration:none;">Mở nguồn ${r.source} ↗</a>
+              <a href="${getGoogleMapsUrl(r)}" target="_blank" rel="noopener" class="btn-primary" style="padding:7px 14px;font-size:12.5px;">📍 Mở trên Google Maps ↗</a>
+              <a href="${getDirectionsUrl(r)}" target="_blank" rel="noopener" class="btn-pill" style="padding:7px 14px;font-size:12.5px;text-decoration:none;">🧭 Chỉ đường tới quán</a>
+              <button class="btn-pill" style="padding:7px 14px;font-size:12.5px;" onclick="closeModal();focusOnMap('${r.id}')">🗺️ Xem bản đồ trên web</button>
             </div>
           </div>
         </div>
