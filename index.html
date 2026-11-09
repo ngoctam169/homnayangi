@@ -335,8 +335,8 @@
             <option value="all-near">Tất cả (0 – 5 km)</option>
           </select>
           <select id="nearSortSelect" onchange="renderNearRecommendations(true)">
-            <option value="best" selected>Ưu tiên: Ngon & nổi bật</option>
-            <option value="closest">Ưu tiên: Gần nhất</option>
+            <option value="closest" selected>Ưu tiên: Gần nhất</option>
+            <option value="best">Ưu tiên: Ngon & nổi bật</option>
             <option value="cheapest">Ưu tiên: Giá rẻ nhất</option>
           </select>
         </div>
@@ -821,8 +821,19 @@
         ].join(" | ");
 
         let rawImg = r.image || "";
-        if (!rawImg || rawImg.startsWith("evidence/")) {
-          rawImg = CATEGORY_FALLBACK_IMG[r.categoryKey] || FALLBACK_THUMB;
+        const isCoffeeGeneric = rawImg.includes("photo-1517701550927-30cf4ba1dba5");
+        if (!rawImg || rawImg.startsWith("evidence/") || rawImg.includes("pasgo.vn") || (isCoffeeGeneric && !/cà phê|cafe|coffee|trà sữa/i.test(r.category + " " + r._displayName))) {
+          if (/bánh đúc|bánh cuốn|bánh ướt|bánh bèo|bánh hỏi/i.test(r.category + " " + r._displayName)) {
+            rawImg = "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=600&q=80";
+          } else if (/chè|tàu hũ|flan|kem|sinh tố/i.test(r.category + " " + r._displayName)) {
+            rawImg = "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=600&q=80";
+          } else if (/súp cua|cháo|phá lấu/i.test(r.category + " " + r._displayName)) {
+            rawImg = "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=600&q=80";
+          } else if (/cà ri|ấn độ/i.test(r.category + " " + r._displayName)) {
+            rawImg = "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=600&q=80";
+          } else {
+            rawImg = CATEGORY_FALLBACK_IMG[r.categoryKey] || FALLBACK_THUMB;
+          }
           r.image = rawImg;
         }
         if (rawImg.includes("googleusercontent.com")) {
@@ -837,12 +848,26 @@
       const dl = document.getElementById("saigonStreetsList");
       if (dl) {
         const stMap = {};
+        const stAvg = {};
         for (let i = 0; i < RESTAURANTS.length; i++) {
           const r = RESTAURANTS[i];
           const key = `${r.street}, ${r.district}`;
-          if (!stMap[key]) stMap[key] = { lat: r.lat, lng: r.lng, street: r.street, district: r.district };
-          STREET_COORDS_MAP[r.street.toLowerCase()] = { lat: r.lat, lng: r.lng, label: `${r.street} (${r.district})` };
-          STREET_COORDS_MAP[key.toLowerCase()] = { lat: r.lat, lng: r.lng, label: `${r.street}, ${r.district}` };
+          const stLower = r.street.toLowerCase();
+          const bareLower = stLower.replace(/^đường\s+/i, "").trim();
+          if (!stAvg[stLower]) stAvg[stLower] = { lat: 0, lng: 0, count: 0, street: r.street, district: r.district };
+          stAvg[stLower].lat += Number(r.lat);
+          stAvg[stLower].lng += Number(r.lng);
+          stAvg[stLower].count += 1;
+          if (!stMap[key]) stMap[key] = stLower;
+          if (bareLower && bareLower !== stLower) {
+            stAvg[bareLower] = stAvg[stLower];
+          }
+        }
+        for (const [k, v] of Object.entries(stAvg)) {
+          const lat = v.lat / v.count;
+          const lng = v.lng / v.count;
+          STREET_COORDS_MAP[k] = { lat, lng, label: `${v.street} (${v.district})`, streetName: v.street };
+          STREET_COORDS_MAP[`${v.street}, ${v.district}`.toLowerCase()] = { lat, lng, label: `${v.street}, ${v.district}`, streetName: v.street };
         }
         dl.innerHTML = Object.keys(stMap).sort((a, b) => a.localeCompare(b, "vi")).map(k => `<option value="${k}"></option>`).join("");
       }
@@ -1171,9 +1196,12 @@
       } else if (nearSort === "cheapest") {
         within.sort((a, b) => a.minPrice - b.minPrice);
       } else {
+        const locLabelLower = (userLocation.label || "").toLowerCase();
         within.sort((a, b) => {
-          const scoreA = a.rating * 2 + Math.log10((a.reviewCount || 10) + 1) - (a._distanceKm / maxKm) * 0.8;
-          const scoreB = b.rating * 2 + Math.log10((b.reviewCount || 10) + 1) - (b._distanceKm / maxKm) * 0.8;
+          const onStreetA = locLabelLower.includes(a.street.replace(/^Đường\s+/i, "").toLowerCase()) ? 2.5 : 0;
+          const onStreetB = locLabelLower.includes(b.street.replace(/^Đường\s+/i, "").toLowerCase()) ? 2.5 : 0;
+          const scoreA = onStreetA + a.rating * 1.6 + Math.log10((a.reviewCount || 10) + 1) - (a._distanceKm / maxKm) * 2.4;
+          const scoreB = onStreetB + b.rating * 1.6 + Math.log10((b.reviewCount || 10) + 1) - (b._distanceKm / maxKm) * 2.4;
           return scoreB - scoreA;
         });
       }
