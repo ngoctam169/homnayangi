@@ -837,11 +837,7 @@
           }
           r.image = rawImg;
         }
-        if (rawImg.includes("googleusercontent.com")) {
-          r._thumbUrl = rawImg.replace(/=w\d+-h\d+[^"&]*/, "=w420-h260-k-no");
-        } else {
-          r._thumbUrl = rawImg;
-        }
+        r._thumbUrl = rawImg;
         r._distanceKm = null;
         r._distanceFmt = "";
         r._distanceShort = "";
@@ -1569,14 +1565,15 @@
       }
     }
 
-    function buildCardHtml(r) {
+    function buildCardHtml(r, idx) {
       const distOverlay = typeof r._distanceKm === "number"
         ? `<span class="card-badge-dist">📍 ${r._distanceShort}</span>`
         : "";
+      const loadingAttr = (typeof idx === "number" && idx < 6) ? "eager" : "lazy";
       return `
         <article class="rest-card" onclick="openModal('${r.id}')">
           <div class="card-thumb">
-            <img src="${r._thumbUrl}" alt="${r._displayName}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=FALLBACK_THUMB;" />
+            <img src="${r._thumbUrl}" alt="${r._displayName}" loading="${loadingAttr}" decoding="async" onerror="this.onerror=null;this.src=FALLBACK_THUMB;" />
             <span class="card-badge-area">${r.district}${r.isCmtRecommended ? " · 🔥 Cmt" : ""}</span>
             <span class="card-badge-rating"><span class="star">★</span> ${r._ratingFmt} <small>(${r._reviewCompact})</small></span>
             ${distOverlay}
