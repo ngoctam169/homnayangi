@@ -301,7 +301,7 @@
           <div style="min-width:0;">
             <div class="brand-title-row">
               <h1 class="brand-title">Hôm Nay Ăn Gì?</h1>
-              <span class="brand-count-badge">502 quán Sài Gòn</span>
+              <span class="brand-count-badge" id="headerCountBadge">502 quán Sài Gòn</span>
             </div>
             <div class="brand-sub">Bình Thạnh · Phú Nhuận · Gò Vấp · Quận 6 · Bình Tân · Tân Phú</div>
           </div>
@@ -470,15 +470,15 @@
 
       <div class="district-bar">
         <div class="district-pills" id="districtPills">
-          <button class="tab-btn active" data-district="all" onclick="setDistrictFilter('all')">Tất cả (502)</button>
-          <button class="tab-btn" data-district="cmt-recommended" onclick="setDistrictFilter('cmt-recommended')">🔥 Cmt Đề Xuất (63)</button>
-          <button class="tab-btn" data-district="Bình Thạnh" onclick="setDistrictFilter('Bình Thạnh')">Bình Thạnh (108)</button>
-          <button class="tab-btn" data-district="Phú Nhuận" onclick="setDistrictFilter('Phú Nhuận')">Phú Nhuận (93)</button>
-          <button class="tab-btn" data-district="Gò Vấp" onclick="setDistrictFilter('Gò Vấp')">Gò Vấp (75)</button>
-          <button class="tab-btn" data-district="Quận 6" onclick="setDistrictFilter('Quận 6')">Quận 6 (70)</button>
-          <button class="tab-btn" data-district="Bình Tân" onclick="setDistrictFilter('Bình Tân')">Bình Tân (68)</button>
-          <button class="tab-btn" data-district="Tân Phú" onclick="setDistrictFilter('Tân Phú')">Tân Phú (69)</button>
-          
+          <button class="tab-btn active" data-district="all" data-label="Tất cả" onclick="setDistrictFilter('all')">Tất cả (502)</button>
+          <button class="tab-btn" data-district="cmt-recommended" data-label="🔥 Cmt Đề Xuất" onclick="setDistrictFilter('cmt-recommended')">🔥 Cmt Đề Xuất (63)</button>
+          <button class="tab-btn" data-district="Bình Thạnh" data-label="Bình Thạnh" onclick="setDistrictFilter('Bình Thạnh')">Bình Thạnh (110)</button>
+          <button class="tab-btn" data-district="Phú Nhuận" data-label="Phú Nhuận" onclick="setDistrictFilter('Phú Nhuận')">Phú Nhuận (98)</button>
+          <button class="tab-btn" data-district="Gò Vấp" data-label="Gò Vấp" onclick="setDistrictFilter('Gò Vấp')">Gò Vấp (76)</button>
+          <button class="tab-btn" data-district="Quận 6" data-label="Quận 6" onclick="setDistrictFilter('Quận 6')">Quận 6 (65)</button>
+          <button class="tab-btn" data-district="Bình Tân" data-label="Bình Tân" onclick="setDistrictFilter('Bình Tân')">Bình Tân (62)</button>
+          <button class="tab-btn" data-district="Tân Phú" data-label="Tân Phú" onclick="setDistrictFilter('Tân Phú')">Tân Phú (72)</button>
+          <button class="tab-btn" data-district="Gần Bình Thạnh" data-label="Giáp Q.1 · Q.3" onclick="setDistrictFilter('Gần Bình Thạnh')">Giáp Q.1 · Q.3 (19)</button>
         </div>
 
         <div class="results-meta">
@@ -874,7 +874,35 @@
       populateStreetOptions();
     }
 
-    function populateStreetOptions() {
+    function matchesDistrictFilter(r, dist) {
+      if (dist === "all") return true;
+      if (dist === "cmt-recommended") return Boolean(r.isCmtRecommended);
+      return r.district === dist;
+    }
+
+    function matchesStreetFilter(r, st) {
+      if (st === "all") return true;
+      return r.street === st || r.streetTag === st;
+    }
+
+    function matchesCategoryFilter(r, cat) {
+      if (cat === "all") return true;
+      if (cat.startsWith("sub:")) return r.subCuisineKey === cat.slice(4);
+      return r.categoryKey === cat;
+    }
+
+    function matchesPriceFilter(r, price) {
+      if (price === "all") return true;
+      if (price === "under-50") return r.minPrice <= 55000;
+      return r.priceTier === price;
+    }
+
+    function matchesQueryFilter(r, q) {
+      if (!q) return true;
+      return matchesVietnameseWords(r._searchHay, q);
+    }
+
+    function populateStreetOptions(cat = "all", price = "all", q = "") {
       const sel = document.getElementById("streetSelect");
       if (!sel) return;
       const districtOrder = ["Bình Thạnh", "Phú Nhuận", "Gò Vấp", "Quận 6", "Bình Tân", "Tân Phú", "Gần Bình Thạnh"];
@@ -883,20 +911,38 @@
 
       for (let i = 0; i < RESTAURANTS.length; i++) {
         const r = RESTAURANTS[i];
-        if (currentDistrict !== "all" && currentDistrict !== "cmt-recommended" && r.district !== currentDistrict) continue;
-        if (currentDistrict === "cmt-recommended" && !r.isCmtRecommended) continue;
+        if (!matchesDistrictFilter(r, currentDistrict)) continue;
+        if (!matchesCategoryFilter(r, cat)) continue;
+        if (!matchesPriceFilter(r, price)) continue;
+        if (!matchesQueryFilter(r, q)) continue;
         const d = r.district || "Khác";
         if (!byDistStreet[d]) byDistStreet[d] = {};
         byDistStreet[d][r.street] = (byDistStreet[d][r.street] || 0) + 1;
       }
 
+      // Keep currently selected street visible with (0) if it belongs to currentDistrict
+      if (currentStreet !== "all") {
+        const ownerRest = RESTAURANTS.find(r => (r.street === currentStreet || r.streetTag === currentStreet) && matchesDistrictFilter(r, currentDistrict));
+        if (ownerRest) {
+          const d = ownerRest.district || "Khác";
+          if (!byDistStreet[d]) byDistStreet[d] = {};
+          if (!(currentStreet in byDistStreet[d])) {
+            byDistStreet[d][currentStreet] = 0;
+          }
+        }
+      }
+
       let totalStreets = 0;
+      let totalPlacesOnStreets = 0;
       let html = "";
       districtOrder.forEach(d => {
         const entries = Object.entries(byDistStreet[d] || {}).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "vi"));
         if (!entries.length) return;
-        totalStreets += entries.length;
-        html += `<optgroup label="${d} (${entries.length} đường)">`;
+        const nonZeroCount = entries.filter(([, cnt]) => cnt > 0).length;
+        totalStreets += nonZeroCount;
+        const distPlaces = entries.reduce((acc, [, cnt]) => acc + cnt, 0);
+        totalPlacesOnStreets += distPlaces;
+        html += `<optgroup label="${d} (${nonZeroCount} đường · ${distPlaces} quán)">`;
         entries.forEach(([stName, cnt]) => {
           const selectedAttr = stName === currentStreet ? " selected" : "";
           html += `<option value="${stName}"${selectedAttr}>${stName} (${cnt})</option>`;
@@ -910,6 +956,101 @@
         sel.value = "all";
       } else {
         sel.value = currentStreet;
+      }
+    }
+
+    function updateDynamicFilterCounts(q, cat, price, filteredLen) {
+      // 1. Update District Pills counts (matching currentStreet + cat + price + q)
+      const distCounts = { all: 0, "cmt-recommended": 0 };
+      for (let i = 0; i < RESTAURANTS.length; i++) {
+        const r = RESTAURANTS[i];
+        if (!matchesStreetFilter(r, currentStreet)) continue;
+        if (!matchesCategoryFilter(r, cat)) continue;
+        if (!matchesPriceFilter(r, price)) continue;
+        if (!matchesQueryFilter(r, q)) continue;
+        distCounts.all += 1;
+        if (r.isCmtRecommended) distCounts["cmt-recommended"] += 1;
+        distCounts[r.district] = (distCounts[r.district] || 0) + 1;
+      }
+      document.querySelectorAll("#districtPills .tab-btn").forEach(btn => {
+        const dKey = btn.getAttribute("data-district");
+        const baseLabel = btn.getAttribute("data-label") || btn.textContent.replace(/\s*\(\d+\)$/, "");
+        btn.setAttribute("data-label", baseLabel);
+        const cnt = distCounts[dKey] || 0;
+        btn.textContent = `${baseLabel} (${cnt})`;
+        btn.style.opacity = (cnt === 0 && dKey !== currentDistrict) ? "0.45" : "1";
+      });
+
+      // 2. Update Category Chips & Category Select counts (matching currentDistrict + currentStreet + price + q)
+      const catCounts = { all: 0 };
+      for (let i = 0; i < RESTAURANTS.length; i++) {
+        const r = RESTAURANTS[i];
+        if (!matchesDistrictFilter(r, currentDistrict)) continue;
+        if (!matchesStreetFilter(r, currentStreet)) continue;
+        if (!matchesPriceFilter(r, price)) continue;
+        if (!matchesQueryFilter(r, q)) continue;
+        catCounts.all += 1;
+        if (r.categoryKey) catCounts[r.categoryKey] = (catCounts[r.categoryKey] || 0) + 1;
+        if (r.subCuisineKey) {
+          const subKey = `sub:${r.subCuisineKey}`;
+          catCounts[subKey] = (catCounts[subKey] || 0) + 1;
+        }
+      }
+      document.querySelectorAll("#categoryChips .cat-chip").forEach(btn => {
+        const cKey = btn.getAttribute("data-cat");
+        const baseLabel = btn.getAttribute("data-label") || btn.textContent.replace(/\s*\(\d+\)$/, "");
+        btn.setAttribute("data-label", baseLabel);
+        const cnt = catCounts[cKey] || 0;
+        btn.textContent = `${baseLabel} (${cnt})`;
+        btn.style.opacity = (cnt === 0 && cKey !== cat) ? "0.45" : "1";
+      });
+      const catSel = document.getElementById("categorySelect");
+      if (catSel) {
+        Array.from(catSel.options).forEach(opt => {
+          const cKey = opt.value;
+          const baseLabel = opt.getAttribute("data-label") || opt.textContent.replace(/\s*\(\d+\)$/, "");
+          opt.setAttribute("data-label", baseLabel);
+          const cnt = catCounts[cKey] || 0;
+          opt.textContent = `${baseLabel} (${cnt})`;
+        });
+      }
+
+      // 3. Update Price Select counts (matching currentDistrict + currentStreet + cat + q)
+      const priceCounts = { all: 0, "under-50": 0, "binh-dan": 0, "tam-trung": 0, "cao-cap": 0 };
+      for (let i = 0; i < RESTAURANTS.length; i++) {
+        const r = RESTAURANTS[i];
+        if (!matchesDistrictFilter(r, currentDistrict)) continue;
+        if (!matchesStreetFilter(r, currentStreet)) continue;
+        if (!matchesCategoryFilter(r, cat)) continue;
+        if (!matchesQueryFilter(r, q)) continue;
+        priceCounts.all += 1;
+        if (r.minPrice <= 55000) priceCounts["under-50"] += 1;
+        if (r.priceTier) priceCounts[r.priceTier] = (priceCounts[r.priceTier] || 0) + 1;
+      }
+      const priceSel = document.getElementById("priceSelect");
+      if (priceSel) {
+        Array.from(priceSel.options).forEach(opt => {
+          const pKey = opt.value;
+          const baseLabel = opt.getAttribute("data-label") || opt.textContent.replace(/\s*\(\d+\)$/, "");
+          opt.setAttribute("data-label", baseLabel);
+          const cnt = priceCounts[pKey] || 0;
+          opt.textContent = `${baseLabel} (${cnt})`;
+        });
+      }
+
+      // 4. Update Street Select options & counts (matching currentDistrict + cat + price + q)
+      populateStreetOptions(cat, price, q);
+
+      // 5. Update Header Badge & Results Count Text
+      const totalAll = RESTAURANTS.length;
+      const isFiltered = filteredLen < totalAll || currentDistrict !== "all" || currentStreet !== "all" || cat !== "all" || price !== "all" || Boolean(q);
+      const headerBadge = document.getElementById("headerCountBadge");
+      if (headerBadge) {
+        headerBadge.textContent = isFiltered ? `Đang hiện ${filteredLen} / ${totalAll} quán` : `${totalAll} quán Sài Gòn`;
+      }
+      const resText = document.getElementById("resultsCountText");
+      if (resText) {
+        resText.textContent = isFiltered ? `${filteredLen} / ${totalAll} quán` : `${filteredLen} quán`;
       }
     }
 
@@ -1348,7 +1489,10 @@
       document.querySelectorAll("#districtPills .tab-btn").forEach(btn => {
         btn.classList.toggle("active", btn.getAttribute("data-district") === district);
       });
-      populateStreetOptions();
+      if (currentStreet !== "all") {
+        const hasStreetInDist = RESTAURANTS.some(r => (r.street === currentStreet || r.streetTag === currentStreet) && matchesDistrictFilter(r, district));
+        if (!hasStreetInDist) currentStreet = "all";
+      }
       applyFilters();
     }
 
@@ -1380,28 +1524,19 @@
         toggleNearMePanel(true);
       }
 
+      // Ensure streetSelect is in sync before filtering (in case currentStreet was reset)
+      populateStreetOptions(cat, price, q);
+
       const filtered = RESTAURANTS.filter(r => {
-        if (currentDistrict === "cmt-recommended") {
-          if (!r.isCmtRecommended) return false;
-        } else if (currentDistrict !== "all" && r.district !== currentDistrict) {
-          return false;
-        }
-        if (currentStreet !== "all" && r.street !== currentStreet && r.streetTag !== currentStreet) return false;
-        if (cat !== "all") {
-          if (cat.startsWith("sub:")) {
-            if (r.subCuisineKey !== cat.slice(4)) return false;
-          } else if (r.categoryKey !== cat) {
-            return false;
-          }
-        }
-        if (price === "under-50") {
-          if (r.minPrice > 55000) return false;
-        } else if (price !== "all" && r.priceTier !== price) {
-          return false;
-        }
-        if (q && !matchesVietnameseWords(r._searchHay, q)) return false;
+        if (!matchesDistrictFilter(r, currentDistrict)) return false;
+        if (!matchesStreetFilter(r, currentStreet)) return false;
+        if (!matchesCategoryFilter(r, cat)) return false;
+        if (!matchesPriceFilter(r, price)) return false;
+        if (!matchesQueryFilter(r, q)) return false;
         return true;
       });
+
+      updateDynamicFilterCounts(q, cat, price, filtered.length);
 
       filtered.sort((a, b) => {
         if (q) {
@@ -1422,7 +1557,6 @@
         return 0;
       });
 
-      document.getElementById("resultsCountText").textContent = `${filtered.length} quán`;
       currentFilteredList = filtered;
       renderCards(filtered);
       if (mapInstance) {
